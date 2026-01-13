@@ -1,8 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Car, Phone } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, Car, Phone, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -15,6 +23,13 @@ export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -90,9 +105,34 @@ export const Navbar = () => {
                 Contact Us
               </Link>
             </Button>
-            <Button variant="hero" size="sm" asChild>
-              <Link to="/cars">View Cars</Link>
-            </Button>
+            
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="hero" size="sm" className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Account
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
+                      <User className="w-4 h-4" />
+                      My Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="flex items-center gap-2 cursor-pointer text-destructive">
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="hero" size="sm" asChild>
+                <Link to="/login">Login</Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -136,9 +176,21 @@ export const Navbar = () => {
             <Button variant="heroOutline" asChild className="w-full">
               <Link to="/contact">Contact Us</Link>
             </Button>
-            <Button variant="hero" asChild className="w-full">
-              <Link to="/cars">View Cars</Link>
-            </Button>
+            {user ? (
+              <>
+                <Button variant="hero" asChild className="w-full">
+                  <Link to="/profile">My Profile</Link>
+                </Button>
+                <Button variant="outline" onClick={handleSignOut} className="w-full flex items-center gap-2">
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Button variant="hero" asChild className="w-full">
+                <Link to="/login">Login</Link>
+              </Button>
+            )}
           </div>
         </div>
       </div>
