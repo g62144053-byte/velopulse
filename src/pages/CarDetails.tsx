@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Fuel, Settings, Users, Gauge, Calendar, Zap, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cars, formatPrice } from '@/data/cars';
+import { TestDriveBookingForm } from '@/components/TestDriveBookingForm';
 
 const CarDetails = () => {
   const { id } = useParams();
@@ -142,38 +143,36 @@ const CarDetails = () => {
             </section>
           </div>
 
-          {/* Sidebar - CTA Card */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 bg-gradient-card rounded-2xl border border-border p-6 animate-fade-up" style={{ animationDelay: '0.3s' }}>
-              <h3 className="font-display text-xl font-bold text-foreground mb-2">
-                Interested in this car?
-              </h3>
-              <p className="text-muted-foreground text-sm mb-6">
-                Book a test drive or contact us for more information.
-              </p>
-
-              <div className="space-y-4">
-                <Button variant="hero" size="lg" className="w-full" asChild>
-                  <Link to="/contact">Book Test Drive</Link>
-                </Button>
-                <Button variant="heroOutline" size="lg" className="w-full" asChild>
-                  <Link to="/contact">Contact Us</Link>
-                </Button>
+          {/* Sidebar - Test Drive Booking */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="sticky top-24 space-y-6">
+              {/* Test Drive Booking Form */}
+              <div className="animate-fade-up" style={{ animationDelay: '0.3s' }}>
+                <TestDriveBookingForm carId={car.id} carName={`${car.brand} ${car.model}`} />
               </div>
 
-              <div className="mt-8 pt-6 border-t border-border">
-                <p className="text-sm text-muted-foreground mb-2">Starting Price</p>
-                <p className="text-3xl font-bold text-gradient-gold">
-                  {formatPrice(car.price)}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  *Ex-showroom price, Mumbai
-                </p>
-              </div>
+              {/* Price Card */}
+              <div className="bg-gradient-card rounded-2xl border border-border p-6 animate-fade-up" style={{ animationDelay: '0.4s' }}>
+                <div className="mb-4">
+                  <p className="text-sm text-muted-foreground mb-2">Starting Price</p>
+                  <p className="text-3xl font-bold text-gradient-gold">
+                    {formatPrice(car.price)}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    *Ex-showroom price, Mumbai
+                  </p>
+                </div>
 
-              <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
-                <div className="w-2 h-2 rounded-full bg-green-500" />
-                <span>Available for immediate delivery</span>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                  <span>Available for immediate delivery</span>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-border">
+                  <Button variant="heroOutline" size="lg" className="w-full" asChild>
+                    <Link to="/contact">Contact Us</Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

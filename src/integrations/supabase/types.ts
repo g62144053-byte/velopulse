@@ -44,6 +44,48 @@ export type Database = {
         }
         Relationships: []
       }
+      test_drives: {
+        Row: {
+          car_id: string
+          car_name: string
+          created_at: string
+          id: string
+          notes: string | null
+          phone: string
+          preferred_date: string
+          preferred_time: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          car_id: string
+          car_name: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          phone: string
+          preferred_date: string
+          preferred_time: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          car_id?: string
+          car_name?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          phone?: string
+          preferred_date?: string
+          preferred_time?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
