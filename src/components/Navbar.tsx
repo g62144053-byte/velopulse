@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Car, Phone, User, LogOut } from 'lucide-react';
+import { Menu, X, Car, Phone, User, LogOut, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserRole } from '@/hooks/useUserRole';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +26,7 @@ export const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useUserRole();
 
   const handleSignOut = async () => {
     await signOut();
@@ -106,6 +108,23 @@ export const Navbar = () => {
               </Link>
             </Button>
             
+            {/* Admin Login Button */}
+            {isAdmin ? (
+              <Button variant="outline" size="sm" asChild className="border-primary/50 text-primary hover:bg-primary/10">
+                <Link to="/admin" className="flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  Admin Panel
+                </Link>
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-primary">
+                <Link to="/admin-login" className="flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  Admin
+                </Link>
+              </Button>
+            )}
+            
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -176,6 +195,21 @@ export const Navbar = () => {
             <Button variant="heroOutline" asChild className="w-full">
               <Link to="/contact">Contact Us</Link>
             </Button>
+            {isAdmin ? (
+              <Button variant="outline" asChild className="w-full border-primary/50 text-primary">
+                <Link to="/admin" className="flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  Admin Panel
+                </Link>
+              </Button>
+            ) : (
+              <Button variant="ghost" asChild className="w-full text-muted-foreground">
+                <Link to="/admin-login" className="flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  Admin Login
+                </Link>
+              </Button>
+            )}
             {user ? (
               <>
                 <Button variant="hero" asChild className="w-full">
