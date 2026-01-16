@@ -3,6 +3,7 @@ import { Fuel, Settings, Users, Gauge } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Car, formatPrice } from '@/data/cars';
 import { cn } from '@/lib/utils';
+import { BuyCarDialog } from '@/components/BuyCarDialog';
 
 interface CarCardProps {
   car: Car;
@@ -79,9 +80,16 @@ export const CarCard = ({ car, className }: CarCardProps) => {
               {formatPrice(car.price)}
             </p>
           </div>
-          <Button variant="hero" size="sm" asChild>
-            <Link to={`/cars/${car.id}`}>View</Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <BuyCarDialog 
+              carId={car.id} 
+              carName={`${car.brand} ${car.model}`} 
+              carPrice={formatPrice(car.price)} 
+            />
+            <Button variant="hero" size="sm" asChild>
+              <Link to={`/cars/${car.id}`}>View</Link>
+            </Button>
+          </div>
         </div>
       </div>
 
