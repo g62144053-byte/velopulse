@@ -14,6 +14,141 @@ export type Database = {
   }
   public: {
     Tables: {
+      car_inquiries: {
+        Row: {
+          car_id: string
+          car_name: string
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          phone: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          car_id: string
+          car_name: string
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          phone: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          car_id?: string
+          car_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          phone?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      cars: {
+        Row: {
+          brand: string
+          category: string
+          created_at: string
+          engine: string
+          featured: boolean
+          fuel: string
+          id: string
+          image: string
+          mileage: string
+          model: string
+          power: string
+          price: number
+          seating: number
+          transmission: string
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          brand: string
+          category?: string
+          created_at?: string
+          engine: string
+          featured?: boolean
+          fuel: string
+          id?: string
+          image: string
+          mileage: string
+          model: string
+          power: string
+          price: number
+          seating?: number
+          transmission: string
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          brand?: string
+          category?: string
+          created_at?: string
+          engine?: string
+          featured?: boolean
+          fuel?: string
+          id?: string
+          image?: string
+          mileage?: string
+          model?: string
+          power?: string
+          price?: number
+          seating?: number
+          transmission?: string
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
+      }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
