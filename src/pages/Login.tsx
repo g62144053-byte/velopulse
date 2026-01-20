@@ -24,9 +24,15 @@ const Login = () => {
     const { error } = await signIn(email, password);
 
     if (error) {
+      // Check if error is related to email not confirmed
+      const isEmailNotConfirmed = error.message.toLowerCase().includes('email not confirmed') || 
+                                   error.message.toLowerCase().includes('email confirmation');
+      
       toast({
-        title: "Login Failed",
-        description: error.message,
+        title: isEmailNotConfirmed ? "Email Not Verified" : "Login Failed",
+        description: isEmailNotConfirmed 
+          ? "Please check your email and click the verification link before logging in." 
+          : error.message,
         variant: "destructive",
       });
     } else {

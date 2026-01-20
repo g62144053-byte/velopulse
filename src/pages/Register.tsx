@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Car, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Car, Eye, EyeOff, Loader2, Mail, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Register = () => {
@@ -15,8 +15,8 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const { signUp } = useAuth();
-  const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,15 +51,57 @@ const Register = () => {
         variant: "destructive",
       });
     } else {
+      setEmailSent(true);
       toast({
-        title: "Account Created!",
-        description: "You can now log in with your credentials.",
+        title: "Verification Email Sent!",
+        description: "Please check your inbox to verify your email address.",
       });
-      navigate('/login');
     }
 
     setIsLoading(false);
   };
+
+  if (emailSent) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-20">
+        <div className="w-full max-w-md animate-fade-in">
+          <Card className="border-border/50 bg-card/50 backdrop-blur-sm text-center">
+            <CardContent className="pt-8 pb-8">
+              <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <Mail className="h-8 w-8 text-primary" />
+              </div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">Check Your Email</h2>
+              <p className="text-muted-foreground mb-6">
+                We've sent a verification link to <span className="font-medium text-foreground">{email}</span>. 
+                Please click the link in the email to verify your account.
+              </p>
+              <div className="bg-muted/50 rounded-lg p-4 mb-6">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-primary mt-0.5" />
+                  <div className="text-left text-sm">
+                    <p className="font-medium text-foreground">Next steps:</p>
+                    <ul className="text-muted-foreground mt-1 space-y-1">
+                      <li>1. Check your email inbox</li>
+                      <li>2. Click the verification link</li>
+                      <li>3. Return to login and sign in</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Didn't receive the email? Check your spam folder.
+              </p>
+              <Link to="/login">
+                <Button variant="outline" className="w-full">
+                  Go to Login
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-20">
