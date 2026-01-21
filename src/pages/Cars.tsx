@@ -4,6 +4,17 @@ import { CarCard } from '@/components/CarCard';
 import { Button } from '@/components/ui/button';
 import { cars, brands, fuelTypes, priceRanges } from '@/data/cars';
 import { cn } from '@/lib/utils';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+
+const CARS_PER_PAGE = 9;
 
 const Cars = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -12,6 +23,7 @@ const Cars = () => {
   const [selectedPriceRange, setSelectedPriceRange] = useState(priceRanges[0]);
   const [showFilters, setShowFilters] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const headerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,15 +57,47 @@ const Cars = () => {
     });
   }, [searchQuery, selectedBrand, selectedFuel, selectedPriceRange]);
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredCars.length / CARS_PER_PAGE);
+  const startIndex = (currentPage - 1) * CARS_PER_PAGE;
+  const paginatedCars = filteredCars.slice(startIndex, startIndex + CARS_PER_PAGE);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedBrand, selectedFuel, selectedPriceRange]);
+
   const clearFilters = () => {
     setSearchQuery('');
     setSelectedBrand('All');
     setSelectedFuel('All');
     setSelectedPriceRange(priceRanges[0]);
+    setCurrentPage(1);
   };
 
   const hasActiveFilters =
     searchQuery || selectedBrand !== 'All' || selectedFuel !== 'All' || selectedPriceRange.label !== 'All';
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 300, behavior: 'smooth' });
+  };
+
+  const getPageNumbers = () => {
+    const pages: (number | 'ellipsis')[] = [];
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      if (currentPage <= 3) {
+        pages.push(1, 2, 3, 4, 'ellipsis', totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1, 'ellipsis', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(1, 'ellipsis', currentPage - 1, currentPage, currentPage + 1, 'ellipsis', totalPages);
+      }
+    }
+    return pages;
+  };
 
   return (
     <main className="min-h-screen bg-background pt-20">
@@ -182,23 +226,70 @@ const Cars = () => {
         {/* Results Count */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-muted-foreground">
-            Showing <span className="text-foreground font-semibold">{filteredCars.length}</span> vehicles
+            Showing <span className="text-foreground font-semibold">{startIndex + 1}-{Math.min(startIndex + CARS_PER_PAGE, filteredCars.length)}</span> of <span className="text-foreground font-semibold">{filteredCars.length}</span> vehicles
           </p>
         </div>
 
         {/* Car Grid */}
-        {filteredCars.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCars.map((car, index) => (
-              <div
-                key={car.id}
-                className="animate-fade-up"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
-                <CarCard car={car} />
+        {paginatedCars.length > 0 ? (
+          <>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {paginatedCars.map((car, index) => (
+                <div
+                  key={car.id}
+                  className="animate-fade-up"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <CarCard car={car} />
+                </div>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-12">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                        className={cn(
+                          "cursor-pointer",
+                          currentPage === 1 && "pointer-events-none opacity-50"
+                        )}
+                      />
+                    </PaginationItem>
+                    
+                    {getPageNumbers().map((page, index) => (
+                      <PaginationItem key={index}>
+                        {page === 'ellipsis' ? (
+                          <PaginationEllipsis />
+                        ) : (
+                          <PaginationLink
+                            onClick={() => handlePageChange(page)}
+                            isActive={currentPage === page}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        )}
+                      </PaginationItem>
+                    ))}
+                    
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+                        className={cn(
+                          "cursor-pointer",
+                          currentPage === totalPages && "pointer-events-none opacity-50"
+                        )}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         ) : (
           <div className="text-center py-16">
             <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
