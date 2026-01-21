@@ -5,13 +5,17 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Mail, Phone, Loader2, Calendar, ChevronRight } from 'lucide-react';
+import { User, Mail, Phone, Loader2, Calendar, ChevronRight, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { ProfilePhotoUpload } from '@/components/ProfilePhotoUpload';
 
 interface Profile {
   full_name: string | null;
   phone: string | null;
+  avatar_url: string | null;
+  bio: string | null;
 }
 
 interface BookingStats {
@@ -23,7 +27,7 @@ const Profile = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [profile, setProfile] = useState<Profile>({ full_name: '', phone: '' });
+  const [profile, setProfile] = useState<Profile>({ full_name: '', phone: '', avatar_url: null, bio: '' });
   const [bookingStats, setBookingStats] = useState<BookingStats>({ total: 0, pending: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -41,7 +45,7 @@ const Profile = () => {
       // Fetch profile
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('full_name, phone')
+        .select('full_name, phone, avatar_url, bio')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -51,6 +55,8 @@ const Profile = () => {
         setProfile({
           full_name: profileData.full_name || '',
           phone: profileData.phone || '',
+          avatar_url: profileData.avatar_url || null,
+          bio: profileData.bio || '',
         });
       }
 
@@ -86,6 +92,7 @@ const Profile = () => {
       .update({
         full_name: profile.full_name,
         phone: profile.phone,
+        bio: profile.bio,
       })
       .eq('user_id', user.id);
 
@@ -161,7 +168,16 @@ const Profile = () => {
             <CardDescription>Update your personal details</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSave} className="space-y-4">
+            <form onSubmit={handleSave} className="space-y-6">
+              {/* Profile Photo */}
+              <div className="flex justify-center pb-4 border-b border-border/50">
+                <ProfilePhotoUpload
+                  userId={user?.id || ''}
+                  currentAvatarUrl={profile.avatar_url}
+                  fullName={profile.full_name}
+                  onUploadComplete={(url) => setProfile({ ...profile, avatar_url: url })}
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="email" className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
@@ -204,6 +220,21 @@ const Profile = () => {
                   value={profile.phone || ''}
                   onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                   className="bg-background/50"
+                />
+              </div>
+
+              {/* Bio */}
+              <div className="space-y-2">
+                <Label htmlFor="bio" className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Bio
+                </Label>
+                <Textarea
+                  id="bio"
+                  placeholder="Tell us a bit about yourself..."
+                  value={profile.bio || ''}
+                  onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                  className="bg-background/50 min-h-[100px]"
                 />
               </div>
 

@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Table,
   TableBody,
@@ -19,6 +20,8 @@ interface UserProfile {
   user_id: string;
   full_name: string | null;
   phone: string | null;
+  avatar_url: string | null;
+  bio: string | null;
   created_at: string;
   is_admin?: boolean;
 }
@@ -105,7 +108,15 @@ export const AdminUserManagement = () => {
                 {users.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell className="font-medium">
-                      {user.full_name || 'Not provided'}
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={user.avatar_url || undefined} />
+                          <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                            {user.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span>{user.full_name || 'Not provided'}</span>
+                      </div>
                     </TableCell>
                     <TableCell>{user.phone || 'Not provided'}</TableCell>
                     <TableCell>
