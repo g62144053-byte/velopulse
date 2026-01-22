@@ -15,10 +15,10 @@ export const Footer = () => {
               </div>
               <div className="flex flex-col">
                 <span className="font-display text-xl font-bold text-foreground">
-                  VELOCITY
+                  AUTO PULSE
                 </span>
                 <span className="text-xs text-muted-foreground tracking-widest uppercase">
-                  Motors India
+                  India
                 </span>
               </div>
             </Link>
@@ -97,8 +97,8 @@ export const Footer = () => {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-primary flex-shrink-0" />
-                <a href="mailto:info@velocitymotors.in" className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm">
-                  info@velocitymotors.in
+                <a href="mailto:info@autopulse.in" className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm">
+                  info@autopulse.in
                 </a>
               </li>
             </ul>
@@ -111,7 +111,7 @@ export const Footer = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-muted-foreground text-sm text-center md:text-left">
-              © 2024 Velocity Motors India. All rights reserved.
+              © 2024 Auto Pulse India. All rights reserved.
             </p>
             <div className="flex gap-6">
               {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((link) => (

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Car, Phone, User, LogOut, Shield } from 'lucide-react';
+import { Menu, X, Car, Phone, User, LogOut, Shield, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -67,10 +67,10 @@ export const Navbar = () => {
             </div>
             <div className="flex flex-col">
               <span className="font-display text-xl font-bold text-foreground tracking-wide">
-                VELOCITY
+                AUTO PULSE
               </span>
               <span className="text-xs text-muted-foreground tracking-widest uppercase">
-                Motors India
+                India
               </span>
             </div>
           </Link>
@@ -138,6 +138,12 @@ export const Navbar = () => {
                     <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
                       <User className="w-4 h-4" />
                       My Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/wishlist" className="flex items-center gap-2 cursor-pointer">
+                      <Heart className="w-4 h-4" />
+                      My Wishlist
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
