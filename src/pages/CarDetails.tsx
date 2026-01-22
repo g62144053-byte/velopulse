@@ -1,12 +1,23 @@
+import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Fuel, Settings, Users, Gauge, Calendar, Zap, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cars, formatPrice } from '@/data/cars';
 import { TestDriveBookingForm } from '@/components/TestDriveBookingForm';
+import { RecentlyViewedCars } from '@/components/RecentlyViewedCars';
+import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 
 const CarDetails = () => {
   const { id } = useParams();
   const car = cars.find((c) => c.id === id);
+  const { addToRecentlyViewed } = useRecentlyViewed();
+
+  // Track this car as recently viewed
+  useEffect(() => {
+    if (car?.id) {
+      addToRecentlyViewed(car.id);
+    }
+  }, [car?.id, addToRecentlyViewed]);
 
   if (!car) {
     return (
@@ -178,6 +189,9 @@ const CarDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* Recently Viewed Section */}
+      <RecentlyViewedCars currentCarId={car.id} />
     </main>
   );
 };
