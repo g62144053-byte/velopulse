@@ -1,9 +1,16 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { Search, SlidersHorizontal, X, ArrowUpDown } from 'lucide-react';
 import { CarCard } from '@/components/CarCard';
 import { Button } from '@/components/ui/button';
 import { cars, brands, fuelTypes, priceRanges } from '@/data/cars';
 import { cn } from '@/lib/utils';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Pagination,
   PaginationContent,
@@ -16,12 +23,23 @@ import {
 
 const CARS_PER_PAGE = 9;
 
+const sortOptions = [
+  { value: 'default', label: 'Default' },
+  { value: 'price-asc', label: 'Price: Low to High' },
+  { value: 'price-desc', label: 'Price: High to Low' },
+  { value: 'year-desc', label: 'Year: Newest First' },
+  { value: 'year-asc', label: 'Year: Oldest First' },
+  { value: 'mileage-asc', label: 'Mileage: Low to High' },
+  { value: 'mileage-desc', label: 'Mileage: High to Low' },
+];
+
 const Cars = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrand, setSelectedBrand] = useState('All');
   const [selectedFuel, setSelectedFuel] = useState('All');
   const [selectedPriceRange, setSelectedPriceRange] = useState(priceRanges[0]);
   const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState('default');
   const [isHeaderVisible, setIsHeaderVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -43,8 +61,8 @@ const Cars = () => {
     return () => observer.disconnect();
   }, []);
 
-  const filteredCars = useMemo(() => {
-    return cars.filter((car) => {
+  const filteredAndSortedCars = useMemo(() => {
+    const filtered = cars.filter((car) => {
       const matchesSearch =
         car.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
         car.model.toLowerCase().includes(searchQuery.toLowerCase());
@@ -55,28 +73,50 @@ const Cars = () => {
 
       return matchesSearch && matchesBrand && matchesFuel && matchesPrice;
     });
-  }, [searchQuery, selectedBrand, selectedFuel, selectedPriceRange]);
+
+    // Parse mileage string to number for sorting (e.g., "22.05 km/l" -> 22.05)
+    const parseMileage = (mileage: string) => parseFloat(mileage.replace(/[^\d.]/g, '')) || 0;
+
+    // Sort the filtered results
+    switch (sortBy) {
+      case 'price-asc':
+        return [...filtered].sort((a, b) => a.price - b.price);
+      case 'price-desc':
+        return [...filtered].sort((a, b) => b.price - a.price);
+      case 'year-desc':
+        return [...filtered].sort((a, b) => b.year - a.year);
+      case 'year-asc':
+        return [...filtered].sort((a, b) => a.year - b.year);
+      case 'mileage-asc':
+        return [...filtered].sort((a, b) => parseMileage(a.mileage) - parseMileage(b.mileage));
+      case 'mileage-desc':
+        return [...filtered].sort((a, b) => parseMileage(b.mileage) - parseMileage(a.mileage));
+      default:
+        return filtered;
+    }
+  }, [searchQuery, selectedBrand, selectedFuel, selectedPriceRange, sortBy]);
 
   // Pagination calculations
-  const totalPages = Math.ceil(filteredCars.length / CARS_PER_PAGE);
+  const totalPages = Math.ceil(filteredAndSortedCars.length / CARS_PER_PAGE);
   const startIndex = (currentPage - 1) * CARS_PER_PAGE;
-  const paginatedCars = filteredCars.slice(startIndex, startIndex + CARS_PER_PAGE);
+  const paginatedCars = filteredAndSortedCars.slice(startIndex, startIndex + CARS_PER_PAGE);
 
-  // Reset to page 1 when filters change
+  // Reset to page 1 when filters or sort change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedBrand, selectedFuel, selectedPriceRange]);
+  }, [searchQuery, selectedBrand, selectedFuel, selectedPriceRange, sortBy]);
 
   const clearFilters = () => {
     setSearchQuery('');
     setSelectedBrand('All');
     setSelectedFuel('All');
     setSelectedPriceRange(priceRanges[0]);
+    setSortBy('default');
     setCurrentPage(1);
   };
 
   const hasActiveFilters =
-    searchQuery || selectedBrand !== 'All' || selectedFuel !== 'All' || selectedPriceRange.label !== 'All';
+    searchQuery || selectedBrand !== 'All' || selectedFuel !== 'All' || selectedPriceRange.label !== 'All' || sortBy !== 'default';
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -223,11 +263,27 @@ const Cars = () => {
           </div>
         </div>
 
-        {/* Results Count */}
-        <div className="flex items-center justify-between mb-6">
+        {/* Results Count and Sort */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <p className="text-muted-foreground">
-            Showing <span className="text-foreground font-semibold">{startIndex + 1}-{Math.min(startIndex + CARS_PER_PAGE, filteredCars.length)}</span> of <span className="text-foreground font-semibold">{filteredCars.length}</span> vehicles
+            Showing <span className="text-foreground font-semibold">{startIndex + 1}-{Math.min(startIndex + CARS_PER_PAGE, filteredAndSortedCars.length)}</span> of <span className="text-foreground font-semibold">{filteredAndSortedCars.length}</span> vehicles
           </p>
+          
+          <div className="flex items-center gap-2">
+            <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-[180px] bg-card border-border">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                {sortOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Car Grid */}
