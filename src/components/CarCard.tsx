@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Car, formatPrice } from '@/data/cars';
 import { cn } from '@/lib/utils';
 import { BuyCarDialog } from '@/components/BuyCarDialog';
+import { FavoriteButton } from '@/components/FavoriteButton';
 
 interface CarCardProps {
   car: Car;
@@ -26,6 +27,11 @@ export const CarCard = ({ car, className }: CarCardProps) => {
           </span>
         </div>
       )}
+
+      {/* Favorite Button */}
+      <div className="absolute top-4 right-4 z-10">
+        <FavoriteButton carId={car.id} />
+      </div>
 
       {/* Image Container */}
       <div className="relative h-48 overflow-hidden">

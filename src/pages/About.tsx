@@ -74,7 +74,7 @@ const About = () => {
               <span className="text-gradient-gold block">Since 2009</span>
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              Velocity Motors is India's trusted car dealership, dedicated to connecting you with the perfect vehicle. With a legacy of excellence and a passion for automobiles, we've helped over 5,000 customers find their dream cars.
+              Auto Pulse is India's trusted car dealership, dedicated to connecting you with the perfect vehicle. With a legacy of excellence and a passion for automobiles, we've helped over 5,000 customers find their dream cars.
             </p>
           </div>
         </div>
@@ -93,7 +93,7 @@ const About = () => {
                   What started as a small showroom in Mumbai has grown into one of India's most trusted car dealership networks. Our founder, driven by a passion for automobiles and a commitment to customer service, envisioned a dealership that would redefine the car-buying experience.
                 </p>
                 <p>
-                  Today, Velocity Motors represents the finest Indian automobile brands, from Maruti Suzuki to Tata Motors, Hyundai to Mahindra. We pride ourselves on offering not just cars, but complete mobility solutions with transparent pricing and exceptional after-sales service.
+                  Today, Auto Pulse represents the finest Indian automobile brands, from Maruti Suzuki to Tata Motors, Hyundai to Mahindra. We pride ourselves on offering not just cars, but complete mobility solutions with transparent pricing and exceptional after-sales service.
                 </p>
                 <p>
                   Our team of automotive experts understands that buying a car is more than a transaction—it's the beginning of countless journeys, family memories, and personal achievements. That's why we're committed to making every customer's experience memorable.

@@ -28,7 +28,7 @@ export const cars: Car[] = [
     engine: '30.2 kWh Battery',
     power: '129 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1617886322168-72b886573c35?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/141867/nexon-ev-exterior-right-front-three-quarter-5.jpeg?isig=0&q=80',
     featured: true,
     category: 'Compact SUV'
   },
@@ -44,7 +44,7 @@ export const cars: Car[] = [
     engine: '1462 cc',
     power: '103 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/159099/brezza-exterior-right-front-three-quarter.jpeg?isig=0&q=80',
     featured: true,
     category: 'Compact SUV'
   },
@@ -60,7 +60,7 @@ export const cars: Car[] = [
     engine: '1493 cc',
     power: '116 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/106815/creta-exterior-right-front-three-quarter-4.jpeg?isig=0&q=80',
     featured: true,
     category: 'SUV'
   },
@@ -76,7 +76,7 @@ export const cars: Car[] = [
     engine: '2184 cc',
     power: '130 PS',
     seating: 4,
-    image: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/40087/thar-exterior-right-front-three-quarter-40.jpeg?isig=0&q=80',
     featured: true,
     category: 'SUV'
   },
@@ -92,7 +92,7 @@ export const cars: Car[] = [
     engine: '1497 cc',
     power: '140 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1606611013016-969c19ba27bb?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/174323/seltos-exterior-right-front-three-quarter.jpeg?isig=0&q=80',
     featured: true,
     category: 'SUV'
   },
@@ -108,7 +108,7 @@ export const cars: Car[] = [
     engine: '2755 cc',
     power: '204 PS',
     seating: 7,
-    image: 'https://images.unsplash.com/photo-1625231334168-25fa67a81c80?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/44709/fortuner-exterior-right-front-three-quarter-19.jpeg?isig=0&q=80',
     featured: false,
     category: 'SUV'
   },
@@ -124,7 +124,7 @@ export const cars: Car[] = [
     engine: '1498 cc',
     power: '121 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/134287/city-exterior-right-front-three-quarter-77.jpeg?isig=0&q=80',
     featured: false,
     category: 'Sedan'
   },
@@ -140,7 +140,7 @@ export const cars: Car[] = [
     engine: '1956 cc',
     power: '170 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/139139/harrier-exterior-right-front-three-quarter.jpeg?isig=0&q=80',
     featured: false,
     category: 'SUV'
   },
@@ -156,7 +156,7 @@ export const cars: Car[] = [
     engine: '1197 cc',
     power: '90 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/159099/swift-exterior-right-front-three-quarter.jpeg?isig=0&q=80',
     featured: false,
     category: 'Hatchback'
   },
@@ -172,7 +172,7 @@ export const cars: Car[] = [
     engine: '1197 cc',
     power: '88 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/150603/i20-exterior-right-front-three-quarter-4.jpeg?isig=0&q=80',
     featured: false,
     category: 'Hatchback'
   },
@@ -188,7 +188,7 @@ export const cars: Car[] = [
     engine: '2184 cc',
     power: '185 PS',
     seating: 7,
-    image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/42355/xuv700-exterior-right-front-three-quarter-3.jpeg?isig=0&q=80',
     featured: true,
     category: 'SUV'
   },
@@ -204,7 +204,7 @@ export const cars: Car[] = [
     engine: '1493 cc',
     power: '100 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/141115/sonet-exterior-right-front-three-quarter-5.jpeg?isig=0&q=80',
     featured: false,
     category: 'Compact SUV'
   },
@@ -220,7 +220,7 @@ export const cars: Car[] = [
     engine: '1197 cc',
     power: '90 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/159099/baleno-exterior-right-front-three-quarter.jpeg?isig=0&q=80',
     featured: false,
     category: 'Hatchback'
   },
@@ -236,7 +236,7 @@ export const cars: Car[] = [
     engine: '1199 cc',
     power: '86 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1606611013016-969c19ba27bb?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/107541/punch-exterior-right-front-three-quarter-73.jpeg?isig=0&q=80',
     featured: false,
     category: 'Compact SUV'
   },
@@ -252,7 +252,7 @@ export const cars: Car[] = [
     engine: '1197 cc',
     power: '120 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/141113/venue-exterior-right-front-three-quarter-3.jpeg?isig=0&q=80',
     featured: false,
     category: 'Compact SUV'
   },
@@ -268,7 +268,7 @@ export const cars: Car[] = [
     engine: '2184 cc',
     power: '175 PS',
     seating: 7,
-    image: 'https://images.unsplash.com/photo-1625231334168-25fa67a81c80?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/40432/scorpio-n-exterior-right-front-three-quarter-16.jpeg?isig=0&q=80',
     featured: false,
     category: 'SUV'
   },
@@ -284,7 +284,7 @@ export const cars: Car[] = [
     engine: '2393 cc',
     power: '150 PS',
     seating: 7,
-    image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/51435/innova-crysta-exterior-right-front-three-quarter-2.jpeg?isig=0&q=80',
     featured: false,
     category: 'MUV'
   },
@@ -300,7 +300,7 @@ export const cars: Car[] = [
     engine: '1199 cc',
     power: '90 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/164943/amaze-exterior-right-front-three-quarter.jpeg?isig=0&q=80',
     featured: false,
     category: 'Sedan'
   },
@@ -316,7 +316,7 @@ export const cars: Car[] = [
     engine: '1956 cc',
     power: '170 PS',
     seating: 7,
-    image: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/139141/safari-exterior-right-front-three-quarter.jpeg?isig=0&q=80',
     featured: false,
     category: 'SUV'
   },
@@ -332,7 +332,7 @@ export const cars: Car[] = [
     engine: '1490 cc',
     power: '116 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/159099/grand-vitara-exterior-right-front-three-quarter.jpeg?isig=0&q=80',
     featured: false,
     category: 'SUV'
   },
@@ -348,7 +348,7 @@ export const cars: Car[] = [
     engine: '1497 cc',
     power: '160 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/121943/verna-exterior-right-front-three-quarter-3.jpeg?isig=0&q=80',
     featured: false,
     category: 'Sedan'
   },
@@ -364,7 +364,7 @@ export const cars: Car[] = [
     engine: '1493 cc',
     power: '116 PS',
     seating: 7,
-    image: 'https://images.unsplash.com/photo-1617886322168-72b886573c35?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/143865/carens-exterior-right-front-three-quarter-8.jpeg?isig=0&q=80',
     featured: false,
     category: 'MUV'
   },
@@ -380,7 +380,7 @@ export const cars: Car[] = [
     engine: '1493 cc',
     power: '100 PS',
     seating: 7,
-    image: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/42377/bolero-neo-exterior-right-front-three-quarter-2.jpeg?isig=0&q=80',
     featured: false,
     category: 'SUV'
   },
@@ -396,7 +396,7 @@ export const cars: Car[] = [
     engine: '1197 cc',
     power: '77 PS',
     seating: 5,
-    image: 'https://images.unsplash.com/photo-1606611013016-969c19ba27bb?w=800&q=80',
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/112839/glanza-exterior-right-front-three-quarter-3.jpeg?isig=0&q=80',
     featured: false,
     category: 'Hatchback'
   },
