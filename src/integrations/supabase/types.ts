@@ -203,6 +203,51 @@ export type Database = {
         }
         Relationships: []
       }
+      service_requests: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          notes: string | null
+          phone: string
+          preferred_date: string | null
+          service_type: string
+          status: string
+          updated_at: string
+          user_id: string | null
+          vehicle_details: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          notes?: string | null
+          phone: string
+          preferred_date?: string | null
+          service_type: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          vehicle_details?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string
+          preferred_date?: string | null
+          service_type?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          vehicle_details?: string | null
+        }
+        Relationships: []
+      }
       test_drives: {
         Row: {
           car_id: string
@@ -242,6 +287,60 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      trade_in_requests: {
+        Row: {
+          condition: string
+          created_at: string
+          email: string
+          id: string
+          mileage: string
+          name: string
+          notes: string | null
+          phone: string
+          photos: string[] | null
+          status: string
+          updated_at: string
+          user_id: string | null
+          vehicle_make: string
+          vehicle_model: string
+          vehicle_year: number
+        }
+        Insert: {
+          condition: string
+          created_at?: string
+          email: string
+          id?: string
+          mileage: string
+          name: string
+          notes?: string | null
+          phone: string
+          photos?: string[] | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          vehicle_make: string
+          vehicle_model: string
+          vehicle_year: number
+        }
+        Update: {
+          condition?: string
+          created_at?: string
+          email?: string
+          id?: string
+          mileage?: string
+          name?: string
+          notes?: string | null
+          phone?: string
+          photos?: string[] | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          vehicle_make?: string
+          vehicle_model?: string
+          vehicle_year?: number
         }
         Relationships: []
       }

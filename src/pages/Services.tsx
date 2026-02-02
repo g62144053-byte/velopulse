@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Wrench, ShieldCheck, BadgeIndianRupee, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { BookServiceForm } from '@/components/BookServiceForm';
+import { TradeInForm } from '@/components/TradeInForm';
 
 const Services = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -46,15 +48,15 @@ const Services = () => {
   const steps = [
     {
       title: 'Tell us what you need',
-      description: 'Share your requirement in a quick message—service, finance, insurance, or trade‑in.',
+      description: 'Share your requirement in a quick message—service, finance, insurance, or trade-in.',
     },
     {
       title: 'We respond with options',
-      description: 'You’ll get clear next steps, timelines, and cost estimates (where applicable).',
+      description: "You'll get clear next steps, timelines, and cost estimates (where applicable).",
     },
     {
       title: 'Handover made simple',
-      description: 'Book your visit and we’ll take care of the rest with premium, showroom‑grade support.',
+      description: "Book your visit and we'll take care of the rest with premium, showroom-grade support.",
     },
   ];
 
@@ -127,6 +129,46 @@ const Services = () => {
                 </ul>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Book Service Form */}
+      <section id="book-service" className="py-24 bg-obsidian">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <p className="text-primary font-semibold uppercase tracking-widest text-sm mb-4">Book a Service</p>
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+                Schedule your next service appointment
+              </h2>
+              <p className="text-muted-foreground text-lg">
+                Fill in the form below and our team will get back to you with available slots.
+              </p>
+            </div>
+            <div className="bg-gradient-card rounded-2xl border border-border p-8">
+              <BookServiceForm />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trade-In Valuation Form */}
+      <section id="trade-in" className="py-24">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <p className="text-primary font-semibold uppercase tracking-widest text-sm mb-4">Trade-In Valuation</p>
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+                Get an instant valuation for your car
+              </h2>
+              <p className="text-muted-foreground text-lg">
+                Share your vehicle details and we'll provide a fair market estimate.
+              </p>
+            </div>
+            <div className="bg-gradient-card rounded-2xl border border-border p-8">
+              <TradeInForm />
+            </div>
           </div>
         </div>
       </section>

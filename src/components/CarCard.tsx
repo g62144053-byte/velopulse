@@ -5,6 +5,7 @@ import { Car, formatPrice } from '@/data/cars';
 import { cn } from '@/lib/utils';
 import { BuyCarDialog } from '@/components/BuyCarDialog';
 import { FavoriteButton } from '@/components/FavoriteButton';
+import { CompareButton } from '@/components/CompareButton';
 
 interface CarCardProps {
   car: Car;
@@ -28,8 +29,9 @@ export const CarCard = ({ car, className }: CarCardProps) => {
         </div>
       )}
 
-      {/* Favorite Button */}
-      <div className="absolute top-4 right-4 z-10">
+      {/* Action Buttons */}
+      <div className="absolute top-4 right-4 z-10 flex gap-1">
+        <CompareButton car={car} className="bg-background/80 backdrop-blur-sm" />
         <FavoriteButton carId={car.id} />
       </div>
 
