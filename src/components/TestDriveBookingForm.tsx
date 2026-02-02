@@ -64,34 +64,59 @@ export const TestDriveBookingForm = ({ carId, carName }: TestDriveBookingFormPro
 
     setIsLoading(true);
 
-    const { error } = await supabase
-      .from('test_drives')
-      .insert({
-        user_id: user.id,
-        car_id: carId,
-        car_name: carName,
-        preferred_date: preferredDate,
-        preferred_time: preferredTime,
-        phone: phone,
-        notes: notes || null,
-      });
+    try {
+      const { error } = await supabase
+        .from('test_drives')
+        .insert({
+          user_id: user.id,
+          car_id: carId,
+          car_name: carName,
+          preferred_date: preferredDate,
+          preferred_time: preferredTime,
+          phone: phone,
+          notes: notes || null,
+        });
 
-    if (error) {
+      if (error) {
+        toast({
+          title: "Booking Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        // Send confirmation email
+        try {
+          await supabase.functions.invoke('send-test-drive-confirmation', {
+            body: {
+              customerEmail: user.email,
+              customerName: user.user_metadata?.full_name || user.email,
+              carName,
+              preferredDate,
+              preferredTime,
+              phone,
+            },
+          });
+        } catch (emailError) {
+          console.error('Failed to send confirmation email:', emailError);
+        }
+
+        toast({
+          title: "Test Drive Booked!",
+          description: "We'll contact you shortly to confirm your appointment.",
+        });
+        // Reset form
+        setPreferredDate('');
+        setPreferredTime('');
+        setPhone('');
+        setNotes('');
+      }
+    } catch (err) {
+      console.error('Booking error:', err);
       toast({
         title: "Booking Failed",
-        description: error.message,
+        description: "An unexpected error occurred.",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Test Drive Booked!",
-        description: "We'll contact you shortly to confirm your appointment.",
-      });
-      // Reset form
-      setPreferredDate('');
-      setPreferredTime('');
-      setPhone('');
-      setNotes('');
     }
 
     setIsLoading(false);
