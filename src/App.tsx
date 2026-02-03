@@ -22,6 +22,7 @@ import Profile from "./pages/Profile";
 import MyBookings from "./pages/MyBookings";
 import Wishlist from "./pages/Wishlist";
 import AdminLogin from "./pages/AdminLogin";
+import AdminRegister from "./pages/AdminRegister";
 import AdminPanel from "./pages/AdminPanel";
 import Compare from "./pages/Compare";
 import NotFound from "./pages/NotFound";
@@ -52,6 +53,7 @@ const App = () => (
               <Route path="/my-bookings" element={<MyBookings />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/admin-login" element={<AdminLogin />} />
+              <Route path="/admin-register" element={<AdminRegister />} />
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/compare" element={<Compare />} />
               <Route path="*" element={<NotFound />} />
