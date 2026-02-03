@@ -24,21 +24,17 @@ const AdminRegister = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Check if any admin already exists
+  // Check if any admin already exists using RPC function
   useEffect(() => {
     const checkExistingAdmins = async () => {
       try {
-        const { data, error } = await supabase
-          .from('user_roles')
-          .select('id')
-          .eq('role', 'admin')
-          .limit(1);
+        const { data, error } = await supabase.rpc('admin_exists');
 
         if (error) {
           console.error('Error checking admins:', error);
           setAdminExists(false);
         } else {
-          setAdminExists(data && data.length > 0);
+          setAdminExists(data === true);
         }
       } catch (error) {
         console.error('Error checking admins:', error);
