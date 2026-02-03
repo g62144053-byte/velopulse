@@ -129,11 +129,19 @@ const AdminLogin = () => {
               </Button>
             </form>
 
-            <div className="mt-6 text-center text-sm">
-              <span className="text-muted-foreground">Not an admin? </span>
-              <Link to="/login" className="text-primary hover:underline font-medium">
-                User login
-              </Link>
+            <div className="mt-6 space-y-2 text-center text-sm">
+              <div>
+                <span className="text-muted-foreground">First time setup? </span>
+                <Link to="/admin-register" className="text-primary hover:underline font-medium">
+                  Register as Admin
+                </Link>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Not an admin? </span>
+                <Link to="/login" className="text-primary hover:underline font-medium">
+                  User login
+                </Link>
+              </div>
             </div>
           </CardContent>
         </Card>
