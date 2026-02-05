@@ -35,6 +35,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+
+const USERS_PER_PAGE = 10;
 
 interface UserProfile {
   id: string;
@@ -57,10 +68,16 @@ export const AdminUserManagement = () => {
   const [isSyncingEmails, setIsSyncingEmails] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user'>('all');
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, roleFilter]);
 
   const fetchUsers = async () => {
     try {
@@ -193,6 +210,26 @@ export const AdminUserManagement = () => {
     return matchesSearch && matchesRole;
   });
 
+  const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
+  const startIndex = (currentPage - 1) * USERS_PER_PAGE;
+  const paginatedUsers = filteredUsers.slice(startIndex, startIndex + USERS_PER_PAGE);
+
+  const getPageNumbers = () => {
+    const pages: (number | 'ellipsis')[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push('ellipsis');
+      for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+        pages.push(i);
+      }
+      if (currentPage < totalPages - 2) pages.push('ellipsis');
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -250,10 +287,15 @@ export const AdminUserManagement = () => {
         {filteredUsers.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>{users.length === 0 ? 'No registered users yet.' : 'No users match your search criteria.'}</p>
+            <p>
+              {users.length === 0
+                ? 'No registered users yet.'
+                : 'No users match your search criteria.'}
+            </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -266,7 +308,7 @@ export const AdminUserManagement = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredUsers.map((user) => {
+                {paginatedUsers.map((user) => {
                   const isCurrentUser = user.user_id === currentUser?.id;
                   const isUpdating = updatingUserId === user.user_id;
 
@@ -388,6 +430,48 @@ export const AdminUserManagement = () => {
               </TableBody>
             </Table>
           </div>
+
+            {totalPages > 1 && (
+              <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p className="text-sm text-muted-foreground">
+                  Showing {startIndex + 1}-{Math.min(startIndex + USERS_PER_PAGE, filteredUsers.length)} of {filteredUsers.length} users
+                </p>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                    {getPageNumbers().map((page, index) =>
+                      page === 'ellipsis' ? (
+                        <PaginationItem key={`ellipsis-${index}`}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      ) : (
+                        <PaginationItem key={page}>
+                          <PaginationLink
+                            onClick={() => setCurrentPage(page)}
+                            isActive={currentPage === page}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      )
+                    )}
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </>
         )}
       </CardContent>
     </Card>
