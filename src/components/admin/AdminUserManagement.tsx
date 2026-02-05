@@ -25,8 +25,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Users, Loader2, ShieldPlus, ShieldMinus, RefreshCw } from 'lucide-react';
+import { Users, Loader2, ShieldPlus, ShieldMinus, RefreshCw, Search } from 'lucide-react';
 import { format } from 'date-fns';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface UserProfile {
   id: string;
@@ -47,6 +55,8 @@ export const AdminUserManagement = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
   const [isSyncingEmails, setIsSyncingEmails] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user'>('all');
 
   useEffect(() => {
     fetchUsers();
@@ -168,6 +178,21 @@ export const AdminUserManagement = () => {
     }
   };
 
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      searchQuery === '' ||
+      user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.phone?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesRole =
+      roleFilter === 'all' ||
+      (roleFilter === 'admin' && user.is_admin) ||
+      (roleFilter === 'user' && !user.is_admin);
+
+    return matchesSearch && matchesRole;
+  });
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -200,10 +225,32 @@ export const AdminUserManagement = () => {
         </div>
       </CardHeader>
       <CardContent>
-        {users.length === 0 ? (
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by name, email, or phone..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <Select value={roleFilter} onValueChange={(value: 'all' | 'admin' | 'user') => setRoleFilter(value)}>
+            <SelectTrigger className="w-full sm:w-[150px]">
+              <SelectValue placeholder="Filter by role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Roles</SelectItem>
+              <SelectItem value="admin">Admins</SelectItem>
+              <SelectItem value="user">Users</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {filteredUsers.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No registered users yet.</p>
+            <p>{users.length === 0 ? 'No registered users yet.' : 'No users match your search criteria.'}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -219,7 +266,7 @@ export const AdminUserManagement = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.map((user) => {
+                {filteredUsers.map((user) => {
                   const isCurrentUser = user.user_id === currentUser?.id;
                   const isUpdating = updatingUserId === user.user_id;
 
