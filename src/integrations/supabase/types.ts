@@ -381,6 +381,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      sync_profile_emails: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

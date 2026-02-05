@@ -25,7 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Users, Loader2, ShieldPlus, ShieldMinus } from 'lucide-react';
+import { Users, Loader2, ShieldPlus, ShieldMinus, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface UserProfile {
@@ -46,6 +46,7 @@ export const AdminUserManagement = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
+  const [isSyncingEmails, setIsSyncingEmails] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -143,6 +144,30 @@ export const AdminUserManagement = () => {
     }
   };
 
+  const syncEmails = async () => {
+    setIsSyncingEmails(true);
+    try {
+      const { error } = await supabase.rpc('sync_profile_emails');
+
+      if (error) throw error;
+
+      toast({
+        title: "Emails Synced",
+        description: "User emails have been updated from authentication data.",
+      });
+      fetchUsers();
+    } catch (error: any) {
+      console.error('Error syncing emails:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to sync emails.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSyncingEmails(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -154,8 +179,25 @@ export const AdminUserManagement = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>User Management</CardTitle>
-        <CardDescription>View all registered users and manage admin roles</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>User Management</CardTitle>
+            <CardDescription>View all registered users and manage admin roles</CardDescription>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={syncEmails}
+            disabled={isSyncingEmails}
+          >
+            {isSyncingEmails ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            Sync Emails
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         {users.length === 0 ? (
