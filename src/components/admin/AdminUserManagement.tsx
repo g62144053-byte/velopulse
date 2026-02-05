@@ -36,6 +36,7 @@ interface UserProfile {
   avatar_url: string | null;
   bio: string | null;
   created_at: string;
+  email: string | null;
   is_admin?: boolean;
 }
 
@@ -168,6 +169,7 @@ export const AdminUserManagement = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Joined</TableHead>
@@ -196,6 +198,9 @@ export const AdminUserManagement = () => {
                             )}
                           </div>
                         </div>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {user.email || 'Not provided'}
                       </TableCell>
                       <TableCell>{user.phone || 'Not provided'}</TableCell>
                       <TableCell>
