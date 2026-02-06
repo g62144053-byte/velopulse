@@ -141,6 +141,20 @@ export const AdminUserManagement = () => {
     }
   };
 
+  const logActivity = async (action: string, targetUserId: string | null, targetUserName: string | null, details: Record<string, unknown>) => {
+    try {
+      await supabase.from('activity_logs').insert([{
+        actor_id: currentUser?.id,
+        action,
+        target_user_id: targetUserId,
+        target_user_name: targetUserName,
+        details: details as unknown as Record<string, never>,
+      }]);
+    } catch (error) {
+      console.error('Error logging activity:', error);
+    }
+  };
+
   const addRole = async (userId: string, role: AppRole, userName: string) => {
     setUpdatingUserId(userId);
     try {
@@ -149,6 +163,9 @@ export const AdminUserManagement = () => {
         .insert({ user_id: userId, role });
 
       if (error) throw error;
+
+      // Log the activity
+      await logActivity('role_added', userId, userName, { role });
 
       toast({
         title: "Role Added",
@@ -177,6 +194,9 @@ export const AdminUserManagement = () => {
         .eq('role', role);
 
       if (error) throw error;
+
+      // Log the activity
+      await logActivity('role_removed', userId, userName, { role });
 
       toast({
         title: "Role Removed",
@@ -257,6 +277,10 @@ export const AdminUserManagement = () => {
       }
 
       if (successCount > 0) {
+        // Log the bulk action
+        const bulkActionType = action === 'add' ? 'bulk_role_added' : 'bulk_role_removed';
+        await logActivity(bulkActionType, null, null, { role, bulk_count: successCount });
+
         toast({
           title: "Bulk Action Complete",
           description: `${action === 'add' ? 'Added' : 'Removed'} ${role} role for ${successCount} user(s).${errorCount > 0 ? ` ${errorCount} failed.` : ''}`,
