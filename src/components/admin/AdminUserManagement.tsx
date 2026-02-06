@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Table,
   TableBody,
@@ -25,7 +26,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Users, Loader2, ShieldPlus, ShieldMinus, RefreshCw, Search } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Users, Loader2, ShieldPlus, ShieldMinus, RefreshCw, Search, ChevronDown, Shield, UserCog } from 'lucide-react';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import {
@@ -47,6 +55,8 @@ import {
 
 const USERS_PER_PAGE = 10;
 
+type AppRole = 'admin' | 'moderator' | 'user';
+
 interface UserProfile {
   id: string;
   user_id: string;
@@ -56,7 +66,7 @@ interface UserProfile {
   bio: string | null;
   created_at: string;
   email: string | null;
-  is_admin?: boolean;
+  roles: AppRole[];
 }
 
 export const AdminUserManagement = () => {
@@ -67,8 +77,12 @@ export const AdminUserManagement = () => {
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
   const [isSyncingEmails, setIsSyncingEmails] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user'>('all');
+  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'moderator' | 'user'>('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [isBulkUpdating, setIsBulkUpdating] = useState(false);
+  const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
+  const [bulkAction, setBulkAction] = useState<{ action: 'add' | 'remove'; role: AppRole } | null>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -78,6 +92,11 @@ export const AdminUserManagement = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, roleFilter]);
+
+  // Clear selection when page changes
+  useEffect(() => {
+    setSelectedUsers(new Set());
+  }, [currentPage]);
 
   const fetchUsers = async () => {
     try {
@@ -89,19 +108,24 @@ export const AdminUserManagement = () => {
 
       if (profileError) throw profileError;
 
-      // Fetch admin roles
+      // Fetch all roles
       const { data: roles, error: roleError } = await supabase
         .from('user_roles')
-        .select('user_id, role')
-        .eq('role', 'admin');
+        .select('user_id, role');
 
       if (roleError) throw roleError;
 
-      const adminUserIds = new Set(roles?.map(r => r.user_id) || []);
+      // Group roles by user
+      const userRolesMap = new Map<string, AppRole[]>();
+      (roles || []).forEach(r => {
+        const existing = userRolesMap.get(r.user_id) || [];
+        existing.push(r.role as AppRole);
+        userRolesMap.set(r.user_id, existing);
+      });
 
       const usersWithRoles = (profiles || []).map(profile => ({
         ...profile,
-        is_admin: adminUserIds.has(profile.user_id),
+        roles: userRolesMap.get(profile.user_id) || [],
       }));
 
       setUsers(usersWithRoles);
@@ -117,25 +141,25 @@ export const AdminUserManagement = () => {
     }
   };
 
-  const addAdminRole = async (userId: string, userName: string) => {
+  const addRole = async (userId: string, role: AppRole, userName: string) => {
     setUpdatingUserId(userId);
     try {
       const { error } = await supabase
         .from('user_roles')
-        .insert({ user_id: userId, role: 'admin' });
+        .insert({ user_id: userId, role });
 
       if (error) throw error;
 
       toast({
-        title: "Admin Role Added",
-        description: `${userName || 'User'} is now an administrator.`,
+        title: "Role Added",
+        description: `${userName || 'User'} is now a ${role}.`,
       });
       fetchUsers();
     } catch (error: any) {
-      console.error('Error adding admin role:', error);
+      console.error('Error adding role:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to add admin role.",
+        description: error.message || "Failed to add role.",
         variant: "destructive",
       });
     } finally {
@@ -143,27 +167,27 @@ export const AdminUserManagement = () => {
     }
   };
 
-  const removeAdminRole = async (userId: string, userName: string) => {
+  const removeRole = async (userId: string, role: AppRole, userName: string) => {
     setUpdatingUserId(userId);
     try {
       const { error } = await supabase
         .from('user_roles')
         .delete()
         .eq('user_id', userId)
-        .eq('role', 'admin');
+        .eq('role', role);
 
       if (error) throw error;
 
       toast({
-        title: "Admin Role Removed",
-        description: `${userName || 'User'} is no longer an administrator.`,
+        title: "Role Removed",
+        description: `${userName || 'User'} is no longer a ${role}.`,
       });
       fetchUsers();
     } catch (error: any) {
-      console.error('Error removing admin role:', error);
+      console.error('Error removing role:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to remove admin role.",
+        description: error.message || "Failed to remove role.",
         variant: "destructive",
       });
     } finally {
@@ -195,6 +219,103 @@ export const AdminUserManagement = () => {
     }
   };
 
+  const handleBulkAction = async () => {
+    if (!bulkAction || selectedUsers.size === 0) return;
+    
+    setIsBulkUpdating(true);
+    const userIds = Array.from(selectedUsers);
+    const { action, role } = bulkAction;
+
+    try {
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (const userId of userIds) {
+        // Skip current user
+        if (userId === currentUser?.id) continue;
+
+        const user = users.find(u => u.user_id === userId);
+        if (!user) continue;
+
+        const hasRole = user.roles.includes(role);
+        
+        if (action === 'add' && !hasRole) {
+          const { error } = await supabase
+            .from('user_roles')
+            .insert({ user_id: userId, role });
+          if (error) errorCount++;
+          else successCount++;
+        } else if (action === 'remove' && hasRole) {
+          const { error } = await supabase
+            .from('user_roles')
+            .delete()
+            .eq('user_id', userId)
+            .eq('role', role);
+          if (error) errorCount++;
+          else successCount++;
+        }
+      }
+
+      if (successCount > 0) {
+        toast({
+          title: "Bulk Action Complete",
+          description: `${action === 'add' ? 'Added' : 'Removed'} ${role} role for ${successCount} user(s).${errorCount > 0 ? ` ${errorCount} failed.` : ''}`,
+        });
+      }
+
+      setSelectedUsers(new Set());
+      fetchUsers();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Bulk action failed.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsBulkUpdating(false);
+      setBulkDialogOpen(false);
+      setBulkAction(null);
+    }
+  };
+
+  const toggleUserSelection = (userId: string) => {
+    const newSelected = new Set(selectedUsers);
+    if (newSelected.has(userId)) {
+      newSelected.delete(userId);
+    } else {
+      newSelected.add(userId);
+    }
+    setSelectedUsers(newSelected);
+  };
+
+  const toggleAllOnPage = () => {
+    const pageUserIds = paginatedUsers
+      .filter(u => u.user_id !== currentUser?.id)
+      .map(u => u.user_id);
+    
+    const allSelected = pageUserIds.every(id => selectedUsers.has(id));
+    
+    if (allSelected) {
+      const newSelected = new Set(selectedUsers);
+      pageUserIds.forEach(id => newSelected.delete(id));
+      setSelectedUsers(newSelected);
+    } else {
+      const newSelected = new Set(selectedUsers);
+      pageUserIds.forEach(id => newSelected.add(id));
+      setSelectedUsers(newSelected);
+    }
+  };
+
+  const getRoleBadge = (roles: AppRole[]) => {
+    if (roles.includes('admin')) {
+      return <Badge variant="default">Admin</Badge>;
+    }
+    if (roles.includes('moderator')) {
+      return <Badge variant="outline" className="border-primary text-primary">Moderator</Badge>;
+    }
+    return <Badge variant="secondary">User</Badge>;
+  };
+
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       searchQuery === '' ||
@@ -204,8 +325,9 @@ export const AdminUserManagement = () => {
 
     const matchesRole =
       roleFilter === 'all' ||
-      (roleFilter === 'admin' && user.is_admin) ||
-      (roleFilter === 'user' && !user.is_admin);
+      (roleFilter === 'admin' && user.roles.includes('admin')) ||
+      (roleFilter === 'moderator' && user.roles.includes('moderator')) ||
+      (roleFilter === 'user' && user.roles.length === 0);
 
     return matchesSearch && matchesRole;
   });
@@ -213,6 +335,10 @@ export const AdminUserManagement = () => {
   const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
   const startIndex = (currentPage - 1) * USERS_PER_PAGE;
   const paginatedUsers = filteredUsers.slice(startIndex, startIndex + USERS_PER_PAGE);
+
+  const selectableOnPage = paginatedUsers.filter(u => u.user_id !== currentUser?.id);
+  const allPageSelected = selectableOnPage.length > 0 && selectableOnPage.every(u => selectedUsers.has(u.user_id));
+  const somePageSelected = selectableOnPage.some(u => selectedUsers.has(u.user_id));
 
   const getPageNumbers = () => {
     const pages: (number | 'ellipsis')[] = [];
@@ -241,10 +367,10 @@ export const AdminUserManagement = () => {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <CardTitle>User Management</CardTitle>
-            <CardDescription>View all registered users and manage admin roles</CardDescription>
+            <CardDescription>View all registered users and manage roles</CardDescription>
           </div>
           <Button
             variant="outline"
@@ -272,17 +398,108 @@ export const AdminUserManagement = () => {
               className="pl-9"
             />
           </div>
-          <Select value={roleFilter} onValueChange={(value: 'all' | 'admin' | 'user') => setRoleFilter(value)}>
+          <Select value={roleFilter} onValueChange={(value: 'all' | 'admin' | 'moderator' | 'user') => setRoleFilter(value)}>
             <SelectTrigger className="w-full sm:w-[150px]">
               <SelectValue placeholder="Filter by role" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Roles</SelectItem>
               <SelectItem value="admin">Admins</SelectItem>
+              <SelectItem value="moderator">Moderators</SelectItem>
               <SelectItem value="user">Users</SelectItem>
             </SelectContent>
           </Select>
         </div>
+
+        {/* Bulk Actions Bar */}
+        {selectedUsers.size > 0 && (
+          <div className="flex items-center gap-4 mb-4 p-3 bg-muted/50 rounded-lg">
+            <span className="text-sm font-medium">
+              {selectedUsers.size} user(s) selected
+            </span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" disabled={isBulkUpdating}>
+                  {isBulkUpdating ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 mr-2" />
+                  )}
+                  Bulk Actions
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem onClick={() => {
+                  setBulkAction({ action: 'add', role: 'admin' });
+                  setBulkDialogOpen(true);
+                }}>
+                  <ShieldPlus className="h-4 w-4 mr-2" />
+                  Add Admin Role
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
+                  setBulkAction({ action: 'add', role: 'moderator' });
+                  setBulkDialogOpen(true);
+                }}>
+                  <UserCog className="h-4 w-4 mr-2" />
+                  Add Moderator Role
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={() => {
+                    setBulkAction({ action: 'remove', role: 'admin' });
+                    setBulkDialogOpen(true);
+                  }}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <ShieldMinus className="h-4 w-4 mr-2" />
+                  Remove Admin Role
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => {
+                    setBulkAction({ action: 'remove', role: 'moderator' });
+                    setBulkDialogOpen(true);
+                  }}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <UserCog className="h-4 w-4 mr-2" />
+                  Remove Moderator Role
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedUsers(new Set())}
+            >
+              Clear Selection
+            </Button>
+          </div>
+        )}
+
+        {/* Bulk Action Confirmation Dialog */}
+        <AlertDialog open={bulkDialogOpen} onOpenChange={setBulkDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {bulkAction?.action === 'add' ? 'Add' : 'Remove'} {bulkAction?.role} Role?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                This will {bulkAction?.action === 'add' ? 'add' : 'remove'} the{' '}
+                <strong>{bulkAction?.role}</strong> role {bulkAction?.action === 'add' ? 'to' : 'from'}{' '}
+                {selectedUsers.size} selected user(s). Your own account will be skipped.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleBulkAction}
+                className={bulkAction?.action === 'remove' ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' : ''}
+              >
+                {bulkAction?.action === 'add' ? 'Add Role' : 'Remove Role'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {filteredUsers.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
@@ -296,140 +513,129 @@ export const AdminUserManagement = () => {
         ) : (
           <>
             <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Joined</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedUsers.map((user) => {
-                  const isCurrentUser = user.user_id === currentUser?.id;
-                  const isUpdating = updatingUserId === user.user_id;
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-12">
+                      <Checkbox
+                        checked={allPageSelected}
+                        onCheckedChange={toggleAllOnPage}
+                        aria-label="Select all users on page"
+                        className={somePageSelected && !allPageSelected ? 'data-[state=checked]:bg-primary/50' : ''}
+                      />
+                    </TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Joined</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedUsers.map((user) => {
+                    const isCurrentUser = user.user_id === currentUser?.id;
+                    const isUpdating = updatingUserId === user.user_id;
+                    const isSelected = selectedUsers.has(user.user_id);
 
-                  return (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={user.avatar_url || undefined} />
-                            <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                              {user.full_name?.charAt(0)?.toUpperCase() || 'U'}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex flex-col">
-                            <span>{user.full_name || 'Not provided'}</span>
-                            {isCurrentUser && (
-                              <span className="text-xs text-muted-foreground">(You)</span>
+                    return (
+                      <TableRow key={user.id} className={isSelected ? 'bg-muted/50' : ''}>
+                        <TableCell>
+                          <Checkbox
+                            checked={isSelected}
+                            onCheckedChange={() => toggleUserSelection(user.user_id)}
+                            disabled={isCurrentUser}
+                            aria-label={`Select ${user.full_name || 'user'}`}
+                          />
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={user.avatar_url || undefined} />
+                              <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                                {user.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex flex-col">
+                              <span>{user.full_name || 'Not provided'}</span>
+                              {isCurrentUser && (
+                                <span className="text-xs text-muted-foreground">(You)</span>
+                              )}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {user.email || 'Not provided'}
+                        </TableCell>
+                        <TableCell>{user.phone || 'Not provided'}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-1 flex-wrap">
+                            {getRoleBadge(user.roles)}
+                            {user.roles.includes('admin') && user.roles.includes('moderator') && (
+                              <Badge variant="outline" className="border-primary text-primary">Moderator</Badge>
                             )}
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {user.email || 'Not provided'}
-                      </TableCell>
-                      <TableCell>{user.phone || 'Not provided'}</TableCell>
-                      <TableCell>
-                        {user.is_admin ? (
-                          <Badge variant="default">Admin</Badge>
-                        ) : (
-                          <Badge variant="secondary">User</Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {format(new Date(user.created_at), 'MMM dd, yyyy')}
-                      </TableCell>
-                      <TableCell>
-                        {isCurrentUser ? (
-                          <span className="text-xs text-muted-foreground">Cannot modify own role</span>
-                        ) : user.is_admin ? (
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-destructive hover:text-destructive"
-                                disabled={isUpdating}
-                              >
-                                {isUpdating ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
+                        </TableCell>
+                        <TableCell>
+                          {format(new Date(user.created_at), 'MMM dd, yyyy')}
+                        </TableCell>
+                        <TableCell>
+                          {isCurrentUser ? (
+                            <span className="text-xs text-muted-foreground">Cannot modify own role</span>
+                          ) : (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="sm" disabled={isUpdating}>
+                                  {isUpdating ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <>
+                                      <Shield className="h-4 w-4 mr-1" />
+                                      Manage Roles
+                                      <ChevronDown className="h-3 w-3 ml-1" />
+                                    </>
+                                  )}
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                {!user.roles.includes('admin') ? (
+                                  <DropdownMenuItem onClick={() => addRole(user.user_id, 'admin', user.full_name || '')}>
+                                    <ShieldPlus className="h-4 w-4 mr-2" />
+                                    Add Admin
+                                  </DropdownMenuItem>
                                 ) : (
-                                  <>
-                                    <ShieldMinus className="h-4 w-4 mr-1" />
+                                  <DropdownMenuItem 
+                                    onClick={() => removeRole(user.user_id, 'admin', user.full_name || '')}
+                                    className="text-destructive focus:text-destructive"
+                                  >
+                                    <ShieldMinus className="h-4 w-4 mr-2" />
                                     Remove Admin
-                                  </>
+                                  </DropdownMenuItem>
                                 )}
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Remove Admin Role?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Are you sure you want to remove admin privileges from{' '}
-                                  <strong>{user.full_name || 'this user'}</strong>? They will no longer have access to the admin panel.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => removeAdminRole(user.user_id, user.full_name || '')}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                >
-                                  Remove Admin
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        ) : (
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={isUpdating}
-                              >
-                                {isUpdating ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                {!user.roles.includes('moderator') ? (
+                                  <DropdownMenuItem onClick={() => addRole(user.user_id, 'moderator', user.full_name || '')}>
+                                    <UserCog className="h-4 w-4 mr-2" />
+                                    Add Moderator
+                                  </DropdownMenuItem>
                                 ) : (
-                                  <>
-                                    <ShieldPlus className="h-4 w-4 mr-1" />
-                                    Make Admin
-                                  </>
+                                  <DropdownMenuItem 
+                                    onClick={() => removeRole(user.user_id, 'moderator', user.full_name || '')}
+                                    className="text-destructive focus:text-destructive"
+                                  >
+                                    <UserCog className="h-4 w-4 mr-2" />
+                                    Remove Moderator
+                                  </DropdownMenuItem>
                                 )}
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Grant Admin Role?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Are you sure you want to make{' '}
-                                  <strong>{user.full_name || 'this user'}</strong> an administrator?
-                                  They will have full access to the admin panel and all management features.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => addAdminRole(user.user_id, user.full_name || '')}
-                                >
-                                  Grant Admin
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
 
             {totalPages > 1 && (
               <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
