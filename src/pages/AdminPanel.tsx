@@ -22,13 +22,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, Users, Car, Calendar, LogOut, Loader2, Mail, ShoppingCart } from 'lucide-react';
+import { Shield, Users, Car, Calendar, LogOut, Loader2, Mail, ShoppingCart, Activity } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { AdminCarManagement } from '@/components/admin/AdminCarManagement';
 import { AdminUserManagement } from '@/components/admin/AdminUserManagement';
 import { AdminInquiryManagement } from '@/components/admin/AdminInquiryManagement';
 import { AdminContactMessages } from '@/components/admin/AdminContactMessages';
+import { AdminActivityLogs } from '@/components/admin/AdminActivityLogs';
 
 interface TestDrive {
   id: string;
@@ -266,7 +267,7 @@ const AdminPanel = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="bookings" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-flex">
+          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-flex">
             <TabsTrigger value="bookings" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               <span className="hidden sm:inline">Test Drives</span>
@@ -286,6 +287,10 @@ const AdminPanel = () => {
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Users</span>
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              <span className="hidden sm:inline">Activity</span>
             </TabsTrigger>
           </TabsList>
 
@@ -364,6 +369,10 @@ const AdminPanel = () => {
 
           <TabsContent value="users">
             <AdminUserManagement />
+          </TabsContent>
+
+          <TabsContent value="activity">
+            <AdminActivityLogs />
           </TabsContent>
         </Tabs>
       </div>
