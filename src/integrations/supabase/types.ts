@@ -44,6 +44,39 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_login_attempts: {
+        Row: {
+          created_at: string
+          email: string
+          failure_reason: string | null
+          id: string
+          ip_address: string | null
+          success: boolean
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: string | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: string | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       car_inquiries: {
         Row: {
           car_id: string
@@ -404,6 +437,7 @@ export type Database = {
     }
     Functions: {
       admin_exists: { Args: never; Returns: boolean }
+      get_lockout_remaining: { Args: { check_email: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -411,6 +445,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_account_locked: { Args: { check_email: string }; Returns: boolean }
       sync_profile_emails: { Args: never; Returns: undefined }
     }
     Enums: {
