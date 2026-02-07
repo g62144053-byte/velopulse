@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useLoginAttempts } from '@/hooks/useLoginAttempts';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Eye, EyeOff, Loader2, AlertTriangle } from 'lucide-react';
+import { Shield, Eye, EyeOff, Loader2, AlertTriangle, Lock, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { formatDistanceToNow } from 'date-fns';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -18,6 +20,14 @@ const AdminLogin = () => {
   const [checkingRole, setCheckingRole] = useState(false);
   const { signIn, user } = useAuth();
   const { isAdmin, isLoading: roleLoading } = useUserRole();
+  const { 
+    isLocked, 
+    lockoutRemaining, 
+    formatLockoutTime, 
+    recentAttempts,
+    logAttempt,
+    isCheckingLockout 
+  } = useLoginAttempts(email);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -27,6 +37,8 @@ const AdminLogin = () => {
       if (isAdmin) {
         navigate('/admin');
       } else if (checkingRole) {
+        // Log failed attempt - not an admin
+        logAttempt(false, 'User does not have admin privileges', user.id);
         toast({
           title: "Access Denied",
           description: "You don't have admin privileges.",
@@ -40,12 +52,24 @@ const AdminLogin = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isLocked) {
+      toast({
+        title: "Account Locked",
+        description: `Too many failed attempts. Try again in ${formatLockoutTime(lockoutRemaining)}.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     setCheckingRole(true);
 
     const { error } = await signIn(email, password);
 
     if (error) {
+      // Log failed attempt
+      await logAttempt(false, error.message);
       toast({
         title: "Login Failed",
         description: error.message,
@@ -53,9 +77,18 @@ const AdminLogin = () => {
       });
       setIsLoading(false);
       setCheckingRole(false);
+    } else {
+      // Log successful attempt - will be checked for admin role in useEffect
+      // We'll log the final result after role check
     }
-    // Role check happens in useEffect after login
   };
+
+  // Log successful admin login
+  useEffect(() => {
+    if (user && isAdmin && checkingRole) {
+      logAttempt(true, undefined, user.id);
+    }
+  }, [user, isAdmin, checkingRole]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-20">
@@ -81,6 +114,19 @@ const AdminLogin = () => {
               </AlertDescription>
             </Alert>
 
+            {isLocked && (
+              <Alert className="mb-4 border-destructive/50 bg-destructive/10">
+                <Lock className="h-4 w-4 text-destructive" />
+                <AlertDescription className="text-destructive flex items-center gap-2">
+                  <span>Account temporarily locked.</span>
+                  <span className="flex items-center gap-1 font-mono">
+                    <Clock className="h-3 w-3" />
+                    {formatLockoutTime(lockoutRemaining)}
+                  </span>
+                </AlertDescription>
+              </Alert>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -92,7 +138,14 @@ const AdminLogin = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="bg-background/50"
+                  disabled={isLocked}
                 />
+                {isCheckingLockout && email.includes('@') && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Checking status...
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -106,28 +159,66 @@ const AdminLogin = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     className="bg-background/50 pr-10"
+                    disabled={isLocked}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    disabled={isLocked}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full" disabled={isLoading || isLocked}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     {checkingRole ? 'Verifying access...' : 'Signing in...'}
+                  </>
+                ) : isLocked ? (
+                  <>
+                    <Lock className="mr-2 h-4 w-4" />
+                    Account Locked
                   </>
                 ) : (
                   'Sign In as Admin'
                 )}
               </Button>
             </form>
+
+            {/* Recent Login History */}
+            {recentAttempts.length > 0 && (
+              <div className="mt-6 pt-4 border-t border-border/50">
+                <h4 className="text-sm font-medium text-muted-foreground mb-3">Recent Login Attempts</h4>
+                <div className="space-y-2">
+                  {recentAttempts.slice(0, 3).map((attempt) => (
+                    <div 
+                      key={attempt.id} 
+                      className={`flex items-center justify-between text-xs p-2 rounded-md ${
+                        attempt.success 
+                          ? 'bg-primary/10 text-primary' 
+                          : 'bg-destructive/10 text-destructive'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        {attempt.success ? (
+                          <CheckCircle className="h-3 w-3" />
+                        ) : (
+                          <XCircle className="h-3 w-3" />
+                        )}
+                        <span>{attempt.success ? 'Successful login' : attempt.failure_reason || 'Failed attempt'}</span>
+                      </div>
+                      <span className="text-muted-foreground">
+                        {formatDistanceToNow(new Date(attempt.created_at), { addSuffix: true })}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="mt-6 space-y-2 text-center text-sm">
               <div>
