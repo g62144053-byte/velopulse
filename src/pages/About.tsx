@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { Shield, Award, Users, Heart, Target, Lightbulb } from 'lucide-react';
+import { useState } from 'react';
+import { Shield, Award, Users, Heart, Target, Lightbulb, MapPin, Phone, Mail, Clock, Car, Wrench, BadgeCheck, TrendingUp, Building2, Handshake } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 
 const About = () => {
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
@@ -45,12 +46,86 @@ const About = () => {
   ];
 
   const milestones = [
-    { year: '2009', title: 'Founded', description: 'Started with a single showroom in Mumbai' },
-    { year: '2012', title: '1000+ Sales', description: 'Reached our first major sales milestone' },
-    { year: '2015', title: 'Expansion', description: 'Opened showrooms across Maharashtra' },
-    { year: '2018', title: 'Digital Launch', description: 'Launched online booking platform' },
-    { year: '2021', title: 'EV Ready', description: 'Added electric vehicles to our lineup' },
-    { year: '2024', title: 'Pan India', description: 'Now serving customers across India' },
+    { year: '2009', title: 'Founded', description: 'Started with a single showroom in Mumbai with just 5 employees' },
+    { year: '2012', title: '1000+ Sales', description: 'Reached our first major sales milestone and expanded team to 25' },
+    { year: '2015', title: 'Expansion', description: 'Opened showrooms across Maharashtra in Pune, Nagpur & Nashik' },
+    { year: '2018', title: 'Digital Launch', description: 'Launched online booking platform serving 10,000+ customers annually' },
+    { year: '2021', title: 'EV Ready', description: 'Added electric vehicles and hybrid cars to our lineup' },
+    { year: '2024', title: 'Pan India', description: 'Now serving customers across 15+ cities with 200+ employees' },
+  ];
+
+  const stats = [
+    { icon: Car, value: '5,000+', label: 'Vehicles Sold' },
+    { icon: Users, value: '50,000+', label: 'Happy Customers' },
+    { icon: Building2, value: '15+', label: 'Showrooms' },
+    { icon: Wrench, value: '10+', label: 'Service Centers' },
+  ];
+
+  const teamMembers = [
+    {
+      name: 'Rajesh Kumar',
+      role: 'Founder & CEO',
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face',
+      bio: '20+ years in automotive industry',
+    },
+    {
+      name: 'Priya Sharma',
+      role: 'Head of Sales',
+      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop&crop=face',
+      bio: 'Expert in customer relations',
+    },
+    {
+      name: 'Amit Patel',
+      role: 'Service Director',
+      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face',
+      bio: 'Certified automotive engineer',
+    },
+    {
+      name: 'Sneha Reddy',
+      role: 'Finance Manager',
+      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face',
+      bio: 'Simplified loan processing expert',
+    },
+  ];
+
+  const services = [
+    {
+      icon: Car,
+      title: 'New Car Sales',
+      description: 'Wide range of latest models from top Indian brands with best-in-class pricing.',
+    },
+    {
+      icon: BadgeCheck,
+      title: 'Certified Pre-Owned',
+      description: 'Thoroughly inspected used cars with warranty and complete documentation.',
+    },
+    {
+      icon: Wrench,
+      title: 'Service & Maintenance',
+      description: 'State-of-the-art service centers with genuine parts and trained technicians.',
+    },
+    {
+      icon: TrendingUp,
+      title: 'Easy Financing',
+      description: 'Hassle-free loan options with competitive interest rates from leading banks.',
+    },
+    {
+      icon: Handshake,
+      title: 'Trade-In Program',
+      description: 'Get the best value for your old car when you upgrade to a new one.',
+    },
+    {
+      icon: Shield,
+      title: 'Extended Warranty',
+      description: 'Additional protection plans to keep your vehicle covered beyond manufacturer warranty.',
+    },
+  ];
+
+  const locations = [
+    { city: 'Mumbai', address: 'Andheri West, Near Metro Station', phone: '+91 22 1234 5678' },
+    { city: 'Pune', address: 'Koregaon Park, Main Road', phone: '+91 20 2345 6789' },
+    { city: 'Delhi NCR', address: 'Gurugram, Sector 29', phone: '+91 124 345 6789' },
+    { city: 'Bangalore', address: 'Whitefield, Main Road', phone: '+91 80 4567 8901' },
   ];
 
   return (
@@ -74,8 +149,29 @@ const About = () => {
               <span className="text-gradient-gold block">Since 2009</span>
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              Auto Pulse is India's trusted car dealership, dedicated to connecting you with the perfect vehicle. With a legacy of excellence and a passion for automobiles, we've helped over 5,000 customers find their dream cars.
+              Auto Pulse is India's trusted car dealership, dedicated to connecting you with the perfect vehicle. With a legacy of excellence and a passion for automobiles, we've helped over 50,000 customers find their dream cars across 15+ cities.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section ref={observeSection('stats')} className="py-16 bg-primary">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div
+                key={index}
+                className={`text-center transition-all duration-700 ${
+                  visibleSections.has('stats') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                }`}
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                <stat.icon className="w-10 h-10 text-primary-foreground mx-auto mb-3" />
+                <p className="text-3xl md:text-4xl font-bold text-primary-foreground font-display">{stat.value}</p>
+                <p className="text-primary-foreground/80 text-sm mt-1">{stat.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -90,13 +186,16 @@ const About = () => {
               </h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  What started as a small showroom in Mumbai has grown into one of India's most trusted car dealership networks. Our founder, driven by a passion for automobiles and a commitment to customer service, envisioned a dealership that would redefine the car-buying experience.
+                  What started as a small showroom in Mumbai has grown into one of India's most trusted car dealership networks. Our founder, Rajesh Kumar, driven by a passion for automobiles and a commitment to customer service, envisioned a dealership that would redefine the car-buying experience.
                 </p>
                 <p>
                   Today, Auto Pulse represents the finest Indian automobile brands, from Maruti Suzuki to Tata Motors, Hyundai to Mahindra. We pride ourselves on offering not just cars, but complete mobility solutions with transparent pricing and exceptional after-sales service.
                 </p>
                 <p>
-                  Our team of automotive experts understands that buying a car is more than a transaction—it's the beginning of countless journeys, family memories, and personal achievements. That's why we're committed to making every customer's experience memorable.
+                  Our team of 200+ automotive experts understands that buying a car is more than a transaction—it's the beginning of countless journeys, family memories, and personal achievements. That's why we're committed to making every customer's experience memorable.
+                </p>
+                <p>
+                  From first-time buyers looking for budget-friendly hatchbacks to business owners seeking premium SUVs, we cater to every need with personalized attention and expert guidance. Our financing partners ensure you get the best loan options, while our service centers keep your vehicle running smoothly for years.
                 </p>
               </div>
             </div>
@@ -114,6 +213,43 @@ const About = () => {
                 <p className="text-primary-foreground/80 text-sm">Years of Excellence</p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section ref={observeSection('services')} className="py-24 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className={`text-center mb-16 transition-all duration-700 ${visibleSections.has('services') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <p className="text-primary font-semibold uppercase tracking-widest text-sm mb-4">
+              What We Offer
+            </p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Our Services
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              From finding your perfect car to keeping it in top condition, we offer comprehensive automotive solutions.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((service, index) => (
+              <Card
+                key={index}
+                className={`bg-card border-border hover:border-primary/50 transition-all duration-500 ${
+                  visibleSections.has('services') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                }`}
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                <CardContent className="p-6">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                    <service.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="font-semibold text-foreground text-lg mb-2">{service.title}</h3>
+                  <p className="text-muted-foreground text-sm">{service.description}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
@@ -150,8 +286,48 @@ const About = () => {
         </div>
       </section>
 
+      {/* Team Section */}
+      <section ref={observeSection('team')} className="py-24">
+        <div className="container mx-auto px-4">
+          <div className={`text-center mb-16 transition-all duration-700 ${visibleSections.has('team') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <p className="text-primary font-semibold uppercase tracking-widest text-sm mb-4">
+              Meet The Experts
+            </p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Our Leadership Team
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Dedicated professionals with decades of combined experience in the automotive industry.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {teamMembers.map((member, index) => (
+              <div
+                key={index}
+                className={`text-center transition-all duration-700 ${
+                  visibleSections.has('team') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                }`}
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden ring-4 ring-primary/20">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h3 className="font-semibold text-foreground text-lg">{member.name}</h3>
+                <p className="text-primary text-sm font-medium">{member.role}</p>
+                <p className="text-muted-foreground text-sm mt-1">{member.bio}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Timeline Section */}
-      <section ref={observeSection('timeline')} className="py-24">
+      <section ref={observeSection('timeline')} className="py-24 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className={`text-center mb-16 transition-all duration-700 ${visibleSections.has('timeline') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <p className="text-primary font-semibold uppercase tracking-widest text-sm mb-4">
@@ -205,7 +381,7 @@ const About = () => {
               </div>
               <h3 className="font-display text-2xl font-bold text-foreground mb-4">Our Mission</h3>
               <p className="text-muted-foreground">
-                To make car ownership accessible, transparent, and joyful for every Indian. We strive to provide the best selection of vehicles, competitive pricing, and exceptional customer service that exceeds expectations.
+                To make car ownership accessible, transparent, and joyful for every Indian. We strive to provide the best selection of vehicles, competitive pricing, and exceptional customer service that exceeds expectations. Every interaction with Auto Pulse should leave you feeling valued and confident in your decision.
               </p>
             </div>
 
@@ -215,8 +391,86 @@ const About = () => {
               </div>
               <h3 className="font-display text-2xl font-bold text-foreground mb-4">Our Vision</h3>
               <p className="text-muted-foreground">
-                To be India's most trusted automotive partner, leading the transition to sustainable mobility while preserving the thrill of driving. We envision a future where every journey is powered by innovation and care.
+                To be India's most trusted automotive partner, leading the transition to sustainable mobility while preserving the thrill of driving. We envision a future where every journey is powered by innovation and care, making Auto Pulse synonymous with automotive excellence across the nation.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Locations Section */}
+      <section ref={observeSection('locations')} className="py-24">
+        <div className="container mx-auto px-4">
+          <div className={`text-center mb-16 transition-all duration-700 ${visibleSections.has('locations') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <p className="text-primary font-semibold uppercase tracking-widest text-sm mb-4">
+              Visit Us
+            </p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Our Showroom Locations
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Find an Auto Pulse showroom near you and experience our premium service firsthand.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {locations.map((location, index) => (
+              <Card
+                key={index}
+                className={`bg-card border-border hover:border-primary/50 transition-all duration-500 ${
+                  visibleSections.has('locations') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                }`}
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                <CardContent className="p-6">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                    <MapPin className="w-5 h-5 text-primary" />
+                  </div>
+                  <h3 className="font-semibold text-foreground text-lg mb-3">{location.city}</h3>
+                  <div className="space-y-2 text-sm">
+                    <p className="text-muted-foreground flex items-start gap-2">
+                      <Building2 className="w-4 h-4 mt-0.5 shrink-0" />
+                      {location.address}
+                    </p>
+                    <p className="text-muted-foreground flex items-center gap-2">
+                      <Phone className="w-4 h-4 shrink-0" />
+                      {location.phone}
+                    </p>
+                    <p className="text-muted-foreground flex items-center gap-2">
+                      <Clock className="w-4 h-4 shrink-0" />
+                      10 AM - 8 PM
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section ref={observeSection('cta')} className="py-24 bg-primary">
+        <div className="container mx-auto px-4">
+          <div className={`text-center max-w-3xl mx-auto transition-all duration-700 ${visibleSections.has('cta') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
+              Ready to Find Your Dream Car?
+            </h2>
+            <p className="text-primary-foreground/80 text-lg mb-8">
+              Visit our showroom or browse our online collection. Our experts are here to help you make the perfect choice.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href="/cars"
+                className="inline-flex items-center justify-center px-8 py-3 bg-background text-foreground rounded-lg font-semibold hover:bg-background/90 transition-colors"
+              >
+                Browse Cars
+              </a>
+              <a
+                href="/contact"
+                className="inline-flex items-center justify-center px-8 py-3 border-2 border-primary-foreground text-primary-foreground rounded-lg font-semibold hover:bg-primary-foreground/10 transition-colors"
+              >
+                Contact Us
+              </a>
             </div>
           </div>
         </div>
