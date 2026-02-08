@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Shield, Award, Users, Heart, Target, Lightbulb, MapPin, Phone, Mail, Clock, Car, Wrench, BadgeCheck, TrendingUp, Building2, Handshake } from 'lucide-react';
+import { Shield, Award, Users, Heart, Target, Lightbulb, MapPin, Phone, Clock, Car, Wrench, BadgeCheck, TrendingUp, Building2, Handshake, Quote, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 const About = () => {
@@ -128,6 +128,110 @@ const About = () => {
     { city: 'Bangalore', address: 'Whitefield, Main Road', phone: '+91 80 4567 8901' },
   ];
 
+  const galleryImages = [
+    {
+      src: 'https://images.unsplash.com/photo-1562141961-b5d1bf4c0728?w=800&q=80',
+      alt: 'Modern car showroom interior',
+      category: 'Showroom',
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80',
+      alt: 'Luxury sports car display',
+      category: 'Collection',
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=800&q=80',
+      alt: 'Premium car lineup',
+      category: 'Collection',
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&q=80',
+      alt: 'SUV collection showcase',
+      category: 'Collection',
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&q=80',
+      alt: 'Elegant sedan display',
+      category: 'Collection',
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=800&q=80',
+      alt: 'State-of-the-art service center',
+      category: 'Service Center',
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80',
+      alt: 'Premium sports car',
+      category: 'Collection',
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1542362567-b07e54358753?w=800&q=80',
+      alt: 'Customer delivery ceremony',
+      category: 'Showroom',
+    },
+  ];
+
+  const testimonials = [
+    {
+      name: 'Vikram Mehta',
+      location: 'Mumbai',
+      car: 'Tata Nexon EV',
+      rating: 5,
+      image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face',
+      review: 'Exceptional experience at Auto Pulse! The team helped me transition to electric seamlessly. From test drive to delivery, everything was handled professionally. Highly recommend for EV buyers!',
+    },
+    {
+      name: 'Ananya Sharma',
+      location: 'Delhi',
+      car: 'Hyundai Creta',
+      rating: 5,
+      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=face',
+      review: 'As a first-time car buyer, I was nervous about the process. The Auto Pulse team made it so easy! They explained every feature and helped me get the best financing option. Love my new Creta!',
+    },
+    {
+      name: 'Rajendra Patil',
+      location: 'Pune',
+      car: 'Mahindra XUV700',
+      rating: 5,
+      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+      review: 'The trade-in value I got for my old car was fantastic. The entire process was transparent with no hidden charges. Auto Pulse truly lives up to its reputation for honest dealings.',
+    },
+    {
+      name: 'Priyanka Reddy',
+      location: 'Bangalore',
+      car: 'Maruti Suzuki Grand Vitara',
+      rating: 5,
+      image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face',
+      review: 'Outstanding service center! My car servicing is always done on time with genuine parts. The staff is knowledgeable and keeps me informed about everything. Best dealership experience ever!',
+    },
+    {
+      name: 'Arjun Nair',
+      location: 'Mumbai',
+      car: 'Kia Seltos',
+      rating: 5,
+      image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop&crop=face',
+      review: 'What sets Auto Pulse apart is their after-sales service. Even months after purchase, they follow up and ensure everything is perfect. This level of care is rare to find!',
+    },
+    {
+      name: 'Meera Krishnan',
+      location: 'Chennai',
+      car: 'Toyota Fortuner',
+      rating: 5,
+      image: 'https://images.unsplash.com/photo-1598550874175-4d0ef436c909?w=150&h=150&fit=crop&crop=face',
+      review: 'Bought my dream Fortuner from Auto Pulse. The team went above and beyond to get me the exact variant and color I wanted. Delivery was a celebration! Thank you, Auto Pulse!',
+    },
+  ];
+
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+
+  const nextTestimonial = () => {
+    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+  };
+
+  const prevTestimonial = () => {
+    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  };
+
   return (
     <main className="min-h-screen bg-background pt-20">
       {/* Hero Section */}
@@ -247,6 +351,177 @@ const About = () => {
                   </div>
                   <h3 className="font-semibold text-foreground text-lg mb-2">{service.title}</h3>
                   <p className="text-muted-foreground text-sm">{service.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Photo Gallery Section */}
+      <section ref={observeSection('gallery')} className="py-24">
+        <div className="container mx-auto px-4">
+          <div className={`text-center mb-16 transition-all duration-700 ${visibleSections.has('gallery') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <p className="text-primary font-semibold uppercase tracking-widest text-sm mb-4">
+              Explore Our Space
+            </p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Photo Gallery
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Take a virtual tour of our showrooms, service centers, and stunning car collections.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {galleryImages.map((image, index) => (
+              <div
+                key={index}
+                className={`group relative overflow-hidden rounded-xl cursor-pointer transition-all duration-700 ${
+                  index === 0 || index === 5 ? 'md:col-span-2 md:row-span-2' : ''
+                } ${
+                  visibleSections.has('gallery') ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                }`}
+                style={{ transitionDelay: `${index * 50}ms` }}
+              >
+                <div className={`${index === 0 || index === 5 ? 'aspect-square' : 'aspect-[4/3]'}`}>
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <span className="inline-block px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full mb-2">
+                      {image.category}
+                    </span>
+                    <p className="text-white text-sm font-medium">{image.alt}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section ref={observeSection('testimonials')} className="py-24 bg-gradient-hero">
+        <div className="container mx-auto px-4">
+          <div className={`text-center mb-16 transition-all duration-700 ${visibleSections.has('testimonials') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <p className="text-primary font-semibold uppercase tracking-widest text-sm mb-4">
+              Customer Stories
+            </p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+              What Our Customers Say
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Real experiences from our valued customers who trusted us with their car-buying journey.
+            </p>
+          </div>
+
+          {/* Featured Testimonial */}
+          <div className={`max-w-4xl mx-auto mb-12 transition-all duration-700 ${visibleSections.has('testimonials') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <Card className="bg-card border-border relative overflow-hidden">
+              <div className="absolute top-6 left-6">
+                <Quote className="w-12 h-12 text-primary/20" />
+              </div>
+              <CardContent className="p-8 md:p-12">
+                <div className="flex flex-col md:flex-row gap-8 items-center">
+                  <div className="shrink-0">
+                    <div className="w-24 h-24 rounded-full overflow-hidden ring-4 ring-primary/20">
+                      <img
+                        src={testimonials[currentTestimonial].image}
+                        alt={testimonials[currentTestimonial].name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex-1 text-center md:text-left">
+                    <div className="flex justify-center md:justify-start gap-1 mb-4">
+                      {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
+                        <Star key={i} className="w-5 h-5 fill-primary text-primary" />
+                      ))}
+                    </div>
+                    <p className="text-lg text-foreground mb-6 italic">
+                      "{testimonials[currentTestimonial].review}"
+                    </p>
+                    <div>
+                      <p className="font-semibold text-foreground">{testimonials[currentTestimonial].name}</p>
+                      <p className="text-muted-foreground text-sm">
+                        {testimonials[currentTestimonial].location} • {testimonials[currentTestimonial].car}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Navigation */}
+                <div className="flex justify-center md:justify-end gap-2 mt-8">
+                  <button
+                    onClick={prevTestimonial}
+                    className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors"
+                    aria-label="Previous testimonial"
+                  >
+                    <ChevronLeft className="w-5 h-5 text-foreground" />
+                  </button>
+                  <button
+                    onClick={nextTestimonial}
+                    className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors"
+                    aria-label="Next testimonial"
+                  >
+                    <ChevronRight className="w-5 h-5 text-foreground" />
+                  </button>
+                </div>
+
+                {/* Dots */}
+                <div className="flex justify-center gap-2 mt-4">
+                  {testimonials.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentTestimonial(index)}
+                      className={`w-2 h-2 rounded-full transition-colors ${
+                        index === currentTestimonial ? 'bg-primary' : 'bg-border hover:bg-muted-foreground'
+                      }`}
+                      aria-label={`Go to testimonial ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Testimonial Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {testimonials.slice(0, 3).map((testimonial, index) => (
+              <Card
+                key={index}
+                className={`bg-card border-border hover:border-primary/50 transition-all duration-500 ${
+                  visibleSections.has('testimonials') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                }`}
+                style={{ transitionDelay: `${(index + 1) * 100}ms` }}
+              >
+                <CardContent className="p-6">
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-primary text-primary" />
+                    ))}
+                  </div>
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-4">
+                    "{testimonial.review}"
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full overflow-hidden">
+                      <img
+                        src={testimonial.image}
+                        alt={testimonial.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground text-sm">{testimonial.name}</p>
+                      <p className="text-muted-foreground text-xs">{testimonial.car}</p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
