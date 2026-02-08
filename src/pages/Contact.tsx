@@ -288,13 +288,48 @@ const Contact = () => {
       </section>
 
       {/* Map Section */}
-      <section className="h-96 bg-muted relative overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <MapPin className="w-12 h-12 text-primary mx-auto mb-4" />
-            <p className="text-muted-foreground">
-              123 Auto Plaza, MG Road, Mumbai
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <p className="text-primary font-semibold uppercase tracking-widest text-sm mb-4">
+              Find Us
             </p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Visit Our <span className="text-gradient-gold">Showroom</span>
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Come experience our premium collection in person. Our expert team is ready to assist you.
+            </p>
+          </div>
+          
+          <div className="rounded-2xl overflow-hidden border border-border shadow-lg">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.755251266891!2d72.83256047520454!3d19.021081682167983!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7ced3f00fe665%3A0x4fa2c4e505257c27!2sMG%20Road%2C%20Mumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1704067200000!5m2!1sen!2sin"
+              width="100%"
+              height="450"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Auto Pulse Showroom Location"
+              className="w-full"
+            />
+          </div>
+          
+          <div className="mt-8 flex flex-wrap justify-center gap-6">
+            <div className="flex items-center gap-3 bg-background px-6 py-3 rounded-full border border-border">
+              <MapPin className="w-5 h-5 text-primary" />
+              <span className="text-foreground font-medium">123 Auto Plaza, MG Road, Mumbai</span>
+            </div>
+            <a 
+              href="https://www.google.com/maps/dir//MG+Road,+Mumbai,+Maharashtra"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-medium hover:bg-primary/90 transition-colors"
+            >
+              <MapPin className="w-5 h-5" />
+              Get Directions
+            </a>
           </div>
         </div>
       </section>
