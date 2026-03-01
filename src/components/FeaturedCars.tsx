@@ -1,49 +1,61 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CarCard } from '@/components/CarCard';
-import { cars } from '@/data/cars';
+import { supabase } from '@/integrations/supabase/client';
+import { Car } from '@/data/cars';
 
 export const FeaturedCars = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [featuredCars, setFeaturedCars] = useState<Car[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const featuredCars = cars.filter((car) => car.featured);
   const itemsPerView = 3;
   const maxIndex = Math.max(0, featuredCars.length - itemsPerView);
 
   useEffect(() => {
+    const fetchFeatured = async () => {
+      const { data } = await supabase
+        .from('cars')
+        .select('*')
+        .eq('featured', true)
+        .order('created_at', { ascending: false });
+      setFeaturedCars((data as unknown as Car[]) || []);
+      setIsLoading(false);
+    };
+    fetchFeatured();
+  }, []);
+
+  useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
+        if (entry.isIntersecting) setIsVisible(true);
       },
       { threshold: 0.2 }
     );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
+    if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
 
-  const handlePrev = () => {
-    setCurrentIndex((prev) => Math.max(0, prev - 1));
-  };
+  // Auto-rotate carousel
+  useEffect(() => {
+    if (featuredCars.length <= itemsPerView) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [featuredCars.length, maxIndex]);
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
-  };
+  const handlePrev = () => setCurrentIndex((prev) => Math.max(0, prev - 1));
+  const handleNext = () => setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
 
   return (
     <section ref={sectionRef} className="py-24 bg-background relative overflow-hidden">
-      {/* Background Elements */}
       <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-primary/5 to-transparent pointer-events-none" />
-      
+
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className={`flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
@@ -56,11 +68,10 @@ export const FeaturedCars = () => {
               <span className="text-gradient-gold ml-3">Vehicles</span>
             </h2>
             <p className="text-muted-foreground mt-4 max-w-xl">
-              Discover our handpicked selection of premium Indian automobiles, each representing the best in design, performance, and value.
+              Discover our handpicked selection of premium automobiles, each representing the best in design, performance, and value.
             </p>
           </div>
 
-          {/* Navigation */}
           <div className="flex items-center gap-4">
             <button
               onClick={handlePrev}
@@ -80,24 +91,47 @@ export const FeaturedCars = () => {
         </div>
 
         {/* Carousel */}
-        <div className="relative overflow-hidden">
-          <div
-            className="flex gap-6 transition-transform duration-500 ease-out"
-            style={{ transform: `translateX(-${currentIndex * (100 / itemsPerView + 2)}%)` }}
-          >
-            {featuredCars.map((car, index) => (
-              <div
-                key={car.id}
-                className={`flex-shrink-0 w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] transition-all duration-700 ${
-                  isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                }`}
-                style={{ transitionDelay: `${index * 100}ms` }}
-              >
-                <CarCard car={car} />
-              </div>
-            ))}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
-        </div>
+        ) : featuredCars.length === 0 ? (
+          <p className="text-center text-muted-foreground py-12">No featured vehicles available.</p>
+        ) : (
+          <>
+            <div className="relative overflow-hidden">
+              <div
+                className="flex gap-6 transition-transform duration-500 ease-out"
+                style={{ transform: `translateX(-${currentIndex * (100 / itemsPerView + 2)}%)` }}
+              >
+                {featuredCars.map((car, index) => (
+                  <div
+                    key={car.id}
+                    className={`flex-shrink-0 w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] transition-all duration-700 ${
+                      isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                    }`}
+                    style={{ transitionDelay: `${index * 100}ms` }}
+                  >
+                    <CarCard car={car} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Dots indicator */}
+            <div className="flex justify-center gap-2 mt-8">
+              {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentIndex(i)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    i === currentIndex ? 'w-8 bg-primary' : 'w-2 bg-border hover:bg-muted-foreground'
+                  }`}
+                />
+              ))}
+            </div>
+          </>
+        )}
 
         {/* View All Button */}
         <div className={`text-center mt-12 transition-all duration-700 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
