@@ -268,7 +268,7 @@ const AdminPanel = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="bookings" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-flex">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:inline-flex">
             <TabsTrigger value="bookings" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               <span className="hidden sm:inline">Test Drives</span>
@@ -276,6 +276,10 @@ const AdminPanel = () => {
             <TabsTrigger value="cars" className="flex items-center gap-2">
               <Car className="h-4 w-4" />
               <span className="hidden sm:inline">Cars</span>
+            </TabsTrigger>
+            <TabsTrigger value="sell-cars" className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4" />
+              <span className="hidden sm:inline">Sell Cars</span>
             </TabsTrigger>
             <TabsTrigger value="inquiries" className="flex items-center gap-2">
               <ShoppingCart className="h-4 w-4" />
