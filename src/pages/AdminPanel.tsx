@@ -364,6 +364,10 @@ const AdminPanel = () => {
             <AdminCarManagement />
           </TabsContent>
 
+          <TabsContent value="sell-cars">
+            <AdminSellCarRequests />
+          </TabsContent>
+
           <TabsContent value="inquiries">
             <AdminInquiryManagement />
           </TabsContent>
