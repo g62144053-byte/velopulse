@@ -30,6 +30,7 @@ import { AdminUserManagement } from '@/components/admin/AdminUserManagement';
 import { AdminInquiryManagement } from '@/components/admin/AdminInquiryManagement';
 import { AdminContactMessages } from '@/components/admin/AdminContactMessages';
 import { AdminActivityLogs } from '@/components/admin/AdminActivityLogs';
+import { AdminSellCarRequests } from '@/components/admin/AdminSellCarRequests';
 
 interface TestDrive {
   id: string;
