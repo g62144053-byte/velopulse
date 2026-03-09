@@ -1,1 +1,4 @@
 project_id = "ndpczavepmzqdpvxiicb"
+
+[functions.send-sell-car-notification]
+verify_jwt = false

@@ -97,6 +97,26 @@ const SellCar = () => {
       });
 
       if (error) throw error;
+
+      // Send email notification (best-effort, don't block on failure)
+      try {
+        await supabase.functions.invoke('send-sell-car-notification', {
+          body: {
+            sellerName: data.name,
+            sellerEmail: data.email,
+            sellerPhone: data.phone,
+            vehicleMake: data.vehicle_make,
+            vehicleModel: data.vehicle_model,
+            vehicleYear: data.vehicle_year,
+            askingPrice: data.asking_price,
+            mileage: data.mileage,
+            condition: data.condition,
+          },
+        });
+      } catch (emailError) {
+        console.error('Email notification failed:', emailError);
+      }
+
       setIsSuccess(true);
       reset();
       setPhotos([]);
