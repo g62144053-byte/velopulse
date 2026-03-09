@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, Users, Car, Calendar, LogOut, Loader2, Mail, ShoppingCart, Activity } from 'lucide-react';
+import { Shield, Users, Car, Calendar, LogOut, Loader2, Mail, ShoppingCart, Activity, DollarSign } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { AdminCarManagement } from '@/components/admin/AdminCarManagement';
