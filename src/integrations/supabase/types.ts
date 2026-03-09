@@ -269,6 +269,63 @@ export type Database = {
         }
         Relationships: []
       }
+      sell_car_requests: {
+        Row: {
+          asking_price: number
+          condition: string
+          created_at: string
+          description: string | null
+          email: string
+          id: string
+          mileage: string
+          name: string
+          phone: string
+          photos: string[] | null
+          status: string
+          updated_at: string
+          user_id: string | null
+          vehicle_make: string
+          vehicle_model: string
+          vehicle_year: number
+        }
+        Insert: {
+          asking_price: number
+          condition: string
+          created_at?: string
+          description?: string | null
+          email: string
+          id?: string
+          mileage: string
+          name: string
+          phone: string
+          photos?: string[] | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          vehicle_make: string
+          vehicle_model: string
+          vehicle_year: number
+        }
+        Update: {
+          asking_price?: number
+          condition?: string
+          created_at?: string
+          description?: string | null
+          email?: string
+          id?: string
+          mileage?: string
+          name?: string
+          phone?: string
+          photos?: string[] | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          vehicle_make?: string
+          vehicle_model?: string
+          vehicle_year?: number
+        }
+        Relationships: []
+      }
       service_requests: {
         Row: {
           created_at: string
