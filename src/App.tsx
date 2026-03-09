@@ -25,6 +25,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminRegister from "./pages/AdminRegister";
 import AdminPanel from "./pages/AdminPanel";
 import Compare from "./pages/Compare";
+import SellCar from "./pages/SellCar";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -56,6 +57,7 @@ const App = () => (
               <Route path="/admin-register" element={<AdminRegister />} />
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/compare" element={<Compare />} />
+              <Route path="/sell-car" element={<SellCar />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <CompareBar />

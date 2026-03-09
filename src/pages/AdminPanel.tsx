@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, Users, Car, Calendar, LogOut, Loader2, Mail, ShoppingCart, Activity } from 'lucide-react';
+import { Shield, Users, Car, Calendar, LogOut, Loader2, Mail, ShoppingCart, Activity, DollarSign } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { AdminCarManagement } from '@/components/admin/AdminCarManagement';
@@ -30,6 +30,7 @@ import { AdminUserManagement } from '@/components/admin/AdminUserManagement';
 import { AdminInquiryManagement } from '@/components/admin/AdminInquiryManagement';
 import { AdminContactMessages } from '@/components/admin/AdminContactMessages';
 import { AdminActivityLogs } from '@/components/admin/AdminActivityLogs';
+import { AdminSellCarRequests } from '@/components/admin/AdminSellCarRequests';
 
 interface TestDrive {
   id: string;
@@ -267,7 +268,7 @@ const AdminPanel = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="bookings" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-flex">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:inline-flex">
             <TabsTrigger value="bookings" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               <span className="hidden sm:inline">Test Drives</span>
@@ -275,6 +276,10 @@ const AdminPanel = () => {
             <TabsTrigger value="cars" className="flex items-center gap-2">
               <Car className="h-4 w-4" />
               <span className="hidden sm:inline">Cars</span>
+            </TabsTrigger>
+            <TabsTrigger value="sell-cars" className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4" />
+              <span className="hidden sm:inline">Sell Cars</span>
             </TabsTrigger>
             <TabsTrigger value="inquiries" className="flex items-center gap-2">
               <ShoppingCart className="h-4 w-4" />
@@ -357,6 +362,10 @@ const AdminPanel = () => {
 
           <TabsContent value="cars">
             <AdminCarManagement />
+          </TabsContent>
+
+          <TabsContent value="sell-cars">
+            <AdminSellCarRequests />
           </TabsContent>
 
           <TabsContent value="inquiries">
